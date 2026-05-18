@@ -192,17 +192,6 @@ if (
   process.env.ESCROW_STORE_ACKNOWLEDGED !== "true"
 ) {
   console.error(
-    "\n⚠️  ESCROW SAFETY WARNING ⚠️\n" +
-      "The in-memory escrow store will lose all sessions on restart.\n" +
-      "In production, escrow sessions must be persisted to a database.\n" +
-      "After connecting a database adapter:\n" +
-      "  • Override storeEscrowSession() and getEscrowSession()\n" +
-      "  • Set environment variable: ESCROW_STORE_ACKNOWLEDGED=true\n" +
-      "Running with in-memory store in production risks fund loss.\n"
-  );
-}
-
-const _sessions = new Map<string, EscrowSession>();
 
 export function storeEscrowSession(session: EscrowSession): void {
   _sessions.set(session.orderId, session);

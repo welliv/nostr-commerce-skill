@@ -185,6 +185,8 @@ export async function deleteListing(
     },
     privateKey
   );
+  if (!verifyEvent(event)) throw new Error("Deletion event signature invalid.");
+
   return publishToRelays(event, relays);
 }
 

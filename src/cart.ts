@@ -31,6 +31,7 @@ import { NostrWalletConnect } from "./nwc.js";
 import { resolveLnurlFromProfile } from "./zaps.js";
 import {
   type PublishResult,
+  type CartItem,
   type NostrEvent,
   KIND,
   DEFAULT_RELAYS,
@@ -38,17 +39,6 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface CartItem {
-  /** Event ID of the kind 30402 product listing */
-  listingEventId: string;
-  /** Merchant's pubkey */
-  merchantPubkey: string;
-  quantity: number;
-  /** Price at time of adding to cart (msats) */
-  amountMsats: number;
-  /** Relay where listing was found */
-  relayHint?: string;
-}
 
 export interface Cart {
   id: string;
@@ -137,8 +127,8 @@ export async function publishCartEvent(
       tags,
       content: JSON.stringify({
         cartId: cart.id,
-        items: cart.items.map(i => ({ listingEventId: i.listingEventId, quantity: i.quantity, amountMsats: i.amountMsats })),
-        totalMsats: cart.items.reduce((s, i) => s + i.amountMsats * i.quantity, 0),
+        items: cart.items.map(i => ({ listingEventId: i.listingEventId, quantity: i.quantity, amountMsats: i.unitPriceMsats * i.quantity })),
+        totalMsats: cart.items.reduce((s, i) => s + i.unitPriceMsats * i.quantity, 0),
         note: cart.note,
         expiresAt: cart.expiresAt,
       }),
@@ -193,7 +183,7 @@ export async function payCartSequential(
   }
 
   for (const [merchantPubkey, items] of byMerchant) {
-    const totalMsats = items.reduce((s, i) => s + i.amountMsats * i.quantity, 0);
+    const totalMsats = items.reduce((s, i) => s + i.unitPriceMsats * i.quantity, 0);
     const merchantWallet = merchantWallets.get(merchantPubkey);
 
     if (!merchantWallet) {
@@ -220,7 +210,7 @@ export async function payCartSequential(
     }
   }
 
-  const totalMsats = cart.items.reduce((s, i) => s + i.amountMsats * i.quantity, 0);
+  const totalMsats = cart.items.reduce((s, i) => s + i.unitPriceMsats * i.quantity, 0);
   return { strategy: "sequential", totalMsats, payments, successCount, failureCount };
 }
 
@@ -247,7 +237,7 @@ export async function payCartPrism(
   const merchantTotals = new Map<string, number>();
   let grandTotal = 0;
   for (const item of cart.items) {
-    const amount = item.amountMsats * item.quantity;
+    const amount = item.unitPriceMsats * item.quantity;
     merchantTotals.set(item.merchantPubkey, (merchantTotals.get(item.merchantPubkey) ?? 0) + amount);
     grandTotal += amount;
   }
@@ -298,7 +288,7 @@ export function summarizeCart(cart: Cart): {
   merchantCount: number;
   isExpired: boolean;
 } {
-  const totalMsats = cart.items.reduce((s, i) => s + i.amountMsats * i.quantity, 0);
+  const totalMsats = cart.items.reduce((s, i) => s + i.unitPriceMsats * i.quantity, 0);
   const merchants = new Set(cart.items.map(i => i.merchantPubkey));
   const now = Math.floor(Date.now() / 1000);
 

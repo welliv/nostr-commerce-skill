@@ -91,8 +91,8 @@ entries in this table.
 | 13 | Zaps | Payment | NIP-57 | zap, tip, like with payment, social payment, lightning like |
 | 14 | Payment Prisms | Split | NIP-57 + splits | revenue split, royalties, multi-recipient, creator split |
 | 15 | Subscriptions | Recurring | NIP-99, NIP-47 | subscription, recurring payment, monthly, membership |
-| 16 | Payment Forwarding | Multi-route | NIP-69 | cart, multi-seller, multi-merchant, payment routing |
-| 17 | Platform Fees | Wrapped | NIP-42 + wrapped invoices | platform fee, commission, marketplace cut, wrapped invoice |
+| 16 | Payment Forwarding | Multi-route | NIP-57 splits + NIP-99 | cart, multi-seller, payment routing, payment routing |
+| 17 | Platform Fees | Wrapped | NIP-57 prisms | platform fee, commission, marketplace cut, wrapped invoice |
 | 18 | Zapvertising | Payment | NIP-57, NIP-50 | advertising, zap ads, pay-per-attention, sats to viewers |
 | 19 | Fiat Conversion | Settlement | Kind 30402 + currency tags | USD pricing, fiat price, dollar listing, currency display |
 | 20 | Paid APIs / L402 | L402 | NIP-98, Kind 30078 | paid API, L402, x402, machine-to-machine, per-call payment |

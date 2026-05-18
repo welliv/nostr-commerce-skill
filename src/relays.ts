@@ -112,9 +112,13 @@ export async function fetchEvents(
 
   return new Promise((resolve) => {
     const events = new Map<string, Event>();
+    let settled = false;
 
     const done = () => {
-      sub.close();
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      sub?.close();
       resolve([...events.values()]);
     };
 
@@ -122,17 +126,16 @@ export async function fetchEvents(
 
     const sub = pool.subscribeMany(relays, filters as any, {
       onevent(event: Event) {
-        // BLIND-02 FIX: verify signature before accepting
         if (!verifyEvent(event)) return;
         if (!events.has(event.id)) {
           events.set(event.id, event);
         }
       },
       oneose() {
-        clearTimeout(timer);
         done();
       },
     });
+  });
   });
 }
 
@@ -183,24 +186,30 @@ export async function fetchLatestEvent(
  */
 export async function isRelayReachable(url: string): Promise<boolean> {
   return new Promise((resolve) => {
-    try {
-      const ws = new WebSocket(url);
-      const timer = setTimeout(() => {
-        ws.close();
-        resolve(false);
-      }, 3_000);
-      ws.onopen = () => {
-        clearTimeout(timer);
-        ws.close();
-        resolve(true);
-      };
-      ws.onerror = () => {
-        clearTimeout(timer);
-        resolve(false);
-      };
-    } catch {
-      resolve(false);
-    }
+    const events = new Map<string, Event>();
+    let settled = false;
+
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      sub?.close();
+      resolve([...events.values()]);
+    };
+
+    const timer = setTimeout(done, FETCH_TIMEOUT_MS);
+
+    const sub = pool.subscribeMany(relays, filters as any, {
+      onevent(event: Event) {
+        if (!verifyEvent(event)) return;
+        if (!events.has(event.id)) {
+          events.set(event.id, event);
+        }
+      },
+      oneose() {
+        done();
+      },
+    });
   });
 }
 

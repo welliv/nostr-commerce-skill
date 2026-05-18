@@ -337,44 +337,16 @@ export const KIND = {
   APP_DATA: 30078,
 } as const;
 
-export type SubscriptionFrequency = "day" | "week" | "month" | "year";
-
-export interface SubscriptionPlan {
-  dTag: string;
-  title: string;
-  description: string;
-  amountMsats: number;
-  currency: "SATS" | "USD" | string;
-  frequency: SubscriptionFrequency;
-  merchantLud16: string;
-  merchantPubkey: string;
-  trialDays?: number;
-}
-
-export interface ActiveSubscription {
-  id: string;
-  planDTag: string;
-  merchantPubkey: string;
-  merchantLud16: string;
-  amountMsats: number;
-  frequency: SubscriptionFrequency;
-  startedAt: number;
-  nextPaymentAt: number;
-  lastPaymentHash?: string;
-  lastPreimage?: string;
-  status: "active" | "paused" | "cancelled" | "payment_failed";
-  nwcUrl: string;
-}
-
 export interface CartItem {
   listingEventId: string;
-  dTag: string;
+  dTag?: string;
   merchantPubkey: string;
   merchantLud16: string;
   quantity: number;
   unitPriceMsats: number;
-  title: string;
+  title?: string;
   imageUrl?: string;
+  relayHint?: string;
 }
 
 export interface Cart {
