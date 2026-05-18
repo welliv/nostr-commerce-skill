@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+
+# Private / audit docs (never ship)
+COMPLETE_AGENT_BRIEF.md
+AGENT_INSTRUCTIONS.md
+
+# OS / editor
+.DS_Store
+*.log

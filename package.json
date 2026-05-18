@@ -1,0 +1,56 @@
+{
+  "name": "nostr-commerce-skill",
+  "version": "1.0.0",
+  "description": "Agentic AI skill for Nostr commerce — 14 scenarios, NIP-47/57/99/59/40/50/22/56 + Lightning",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "SKILL.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "prepublishOnly": "npm run build && npm run typecheck"
+  },
+  "keywords": [
+    "nostr",
+    "bitcoin",
+    "lightning",
+    "nip",
+    "commerce",
+    "nwc",
+    "marketplace",
+    "decentralized",
+    "nostr-wallet-connect",
+    "nip-47",
+    "nip-57",
+    "nip-99"
+  ],
+  "author": "",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@getalby/sdk": "^3.6.0",
+    "nostr-tools": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
