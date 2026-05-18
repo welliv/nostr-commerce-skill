@@ -76,3 +76,15 @@ await saveIdentityToFile(identity, 'strong-password', './merchant-key.json');
 // Load it back
 const identity = await loadIdentityFromFile('./merchant-key.json', 'strong-password');
 ```
+
+## Honest Limitations (read before production use)
+
+These constraints are real and affect what you can ship today:
+
+- **NWC hold invoices** (escrow) require Alby Hub. Standard NWC wallets do not support hold invoices.
+- **Subscriptions** are push-payment only. There is no automatic pull model yet.
+- **Zapvertising** (pay-per-view) has 30–60% LNURL coverage depending on the audience's wallets.
+- **Fiat pricing** uses CoinGecko snapshots. Volatility between quote and settlement is the merchant's risk.
+- **L402 / Paid APIs** currently use a simplified HMAC token, not full macaroons.
+
+All 22 scenarios are implemented and tested, but the above points determine whether a given use-case is production-ready today.
