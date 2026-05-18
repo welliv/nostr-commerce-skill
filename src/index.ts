@@ -267,5 +267,30 @@ export * from "./notifications.js";
 export * from "./disputes.js";
 export * from "./l402.js";
 
+// Explicit re-exports for critical V2 functions (ensures they are always available)
+export {
+  createSubscription,
+  cancelSubscription,
+  chargeSubscription,
+  getSubscription,
+} from "./subscriptions.js";
+
+export {
+  buildCart,
+  summarizeCart,
+  resolvePaymentStrategy,
+} from "./cart.js";
+
+export {
+  initiateDispute,
+  resolveDispute,
+  verifyPaymentViaLnurl,
+} from "./disputes.js";
+
+export {
+  createL402Challenge,
+  verifyL402Credentials,
+} from "./l402.js";
+
 // NWCEscrowBackend (V2 improvement to Scenario 8)
 export { NWCEscrowBackend, createEscrowWithNWC } from "./escrow.js";

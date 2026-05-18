@@ -11,21 +11,34 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist", "SKILL.md", "README.md"],
+  "files": [
+    "dist",
+    "SKILL.md",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build && npm run typecheck"
   },
   "dependencies": {
-    "@getalby/sdk": "^3.6.0",
     "@getalby/lightning-tools": "^5.0.0",
+    "@getalby/sdk": "^3.6.0",
     "nostr-tools": "^2.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.4.0"
+    "@vitest/coverage-v8": "^4.1.6",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.22.1",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.6"
   },
-  "engines": { "node": ">=18.0.0" }
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

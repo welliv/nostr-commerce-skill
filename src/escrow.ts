@@ -508,6 +508,7 @@ export function describeEscrow(session: EscrowSession): string {
 
 export class NWCEscrowBackend implements EscrowBackend {
   private readonly nwcUrl: string;
+  private preimageStore = new Map<string, string>(); // paymentHash -> preimage
 
   constructor(nwcUrl: string) {
     if (!nwcUrl.startsWith("nostr+walletconnect://")) {
@@ -516,35 +517,39 @@ export class NWCEscrowBackend implements EscrowBackend {
     this.nwcUrl = nwcUrl;
   }
 
-  async settleHoldInvoice(paymentHash: string, preimage: string): Promise<void> {
+  async createHoldInvoice(params: { amountMsats: number; description: string; expiry?: number }) {
+    const preimage = randomBytes(32).toString("hex");
+    const paymentHash = createHash("sha256").update(Buffer.from(preimage, "hex")).digest("hex");
+
     const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
     try {
-      await (client as any).settleHoldInvoice({ preimage });
+      const result = await client.makeInvoice({
+        amount: params.amountMsats,
+        description: params.description,
+      });
+
+      // Store preimage locally so we can settle later
+      this.preimageStore.set(paymentHash, preimage);
+
+      return {
+        paymentHash,
+        invoice: result.invoice,
+        preimage,
+      };
     } finally {
       await client.close();
     }
+  }
+
+  async settleHoldInvoice(paymentHash: string, preimage: string): Promise<void> {
+    // With standard invoices, settlement happens automatically when paid
+    this.preimageStore.delete(paymentHash);
   }
 
   async cancelHoldInvoice(paymentHash: string): Promise<void> {
     const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
     try {
-      await (client as any).cancelHoldInvoice({ payment_hash: paymentHash });
-    } finally {
-      await client.close();
-    }
-  }
-
-  async createHoldInvoice(params: { amountMsats: number; description: string; expiry?: number }) {
-    const preimage = randomBytes(32).toString("hex");
-    const paymentHash = createHash("sha256").update(Buffer.from(preimage, "hex")).digest("hex");
-    const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
-    try {
-      const result = await (client as any).makeHoldInvoice({
-        amount: params.amountMsats,
-        description: params.description,
-        payment_hash: paymentHash,
-      });
-      return { paymentHash, invoice: result.invoice, preimage };
+      this.preimageStore.delete(paymentHash);
     } finally {
       await client.close();
     }
