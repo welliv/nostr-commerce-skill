@@ -1,5 +1,5 @@
 /**
- * storage.ts — Encrypted Identity Storage (BLIND-03 Fix)
+ * storage.ts - Encrypted Identity Storage (BLIND-03 Fix)
  *
  * Non-technical merchants cannot manage raw Uint8Array private keys.
  * This module provides password-based encrypted storage for both
@@ -30,7 +30,7 @@ export interface EncryptedIdentity {
   iv: string;
   /** Encrypted private key (hex), base64 encoded */
   ciphertext: string;
-  /** Public key (hex) — stored unencrypted for quick identity display */
+  /** Public key (hex) - stored unencrypted for quick identity display */
   pubkey: string;
   /** npub for display */
   npub: string;

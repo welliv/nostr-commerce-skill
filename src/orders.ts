@@ -1,5 +1,5 @@
 /**
- * orders.ts — Encrypted Order Messaging (Scenario 6)
+ * orders.ts - Encrypted Order Messaging (Scenario 6)
  *
  * Implements NIP-44 + NIP-59 gift-wrap for fully private order communication.
  * Relay operators see: "a message arrived for pubkey X." Nothing else.
@@ -41,9 +41,9 @@ function decrypt44(recipientPrivkey: Uint8Array, senderPubkey: string, ciphertex
  * Wrap a message so the sender's identity is hidden from relay operators.
  *
  * Three-layer structure (outside → inside):
- *   Wrap (kind 1059) — signed by a one-time random key
- *     └─ Seal (kind 13) — signed by the real sender, encrypted to recipient
- *         └─ Rumor — the unsigned inner event with the actual content
+ *   Wrap (kind 1059) - signed by a one-time random key
+ *     └─ Seal (kind 13) - signed by the real sender, encrypted to recipient
+ *         └─ Rumor - the unsigned inner event with the actual content
  *
  * The relay only sees the wrap's random pubkey. The sender's real identity
  * is inside the seal, encrypted with NIP-44. Even the relay operator cannot
@@ -57,7 +57,7 @@ function giftWrap(
 ): Event {
   const senderPubkey = getPublicKey(senderPrivkey);
 
-  // Inner rumor: the real message (unsigned — no sig on purpose per NIP-59)
+  // Inner rumor: the real message (unsigned - no sig on purpose per NIP-59)
   const rumor = {
     kind: KIND.PRIVATE_MESSAGE,
     created_at: Math.floor(Date.now() / 1000),
@@ -137,7 +137,7 @@ export function unwrapGiftWrap(
   const rumor = JSON.parse(rumorJson);
 
   return {
-    senderPubkey: seal.pubkey,   // real sender identity — from the seal, not the wrap
+    senderPubkey: seal.pubkey,   // real sender identity - from the seal, not the wrap
     content: rumor.content,
     createdAt: rumor.created_at,
   };

@@ -1,8 +1,8 @@
 /**
- * relays.ts — Relay connection, publish, and fetch utilities
+ * relays.ts - Relay connection, publish, and fetch utilities
  *
  * All modules use these helpers. Never call pool methods directly
- * outside this file — connection management stays in one place.
+ * outside this file - connection management stays in one place.
  *
  * AUDIT FIXES APPLIED:
  *   BUG-01: pool.publish() returns Promise<string>[], not Promise<string>.
@@ -38,7 +38,7 @@ const PUBLISH_TIMEOUT_MS = 8_000;
  * Publish a finalized event to multiple relays.
  *
  * BUG-01 FIX: SimplePool.publish(relays, event) returns Promise<string>[]
- * — an array of promises, NOT a single promise. Previous code passed the
+ * - an array of promises, NOT a single promise. Previous code passed the
  * array to Promise.race as if it were a single thenable. It never resolved.
  *
  * Fix: publish to one relay at a time, destructure the single-element array.
@@ -100,7 +100,7 @@ const FETCH_TIMEOUT_MS = 6_000;
  * Deduplicates by event ID.
  *
  * BLIND-02 FIX: Added verifyEvent() check. Malicious relays can forge events
- * — without signature verification, a corrupt listing or fake review from a
+ * - without signature verification, a corrupt listing or fake review from a
  * relay operator would be indistinguishable from a legitimate one.
  * Events failing verification are silently dropped.
  */

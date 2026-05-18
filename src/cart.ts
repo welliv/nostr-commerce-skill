@@ -1,5 +1,5 @@
 /**
- * cart.ts — Multi-Merchant Cart & Payment Forwarding (Scenario 16)
+ * cart.ts - Multi-Merchant Cart & Payment Forwarding (Scenario 16)
  *
  * NIPs: NIP-99 (listings), NIP-57 (zap splits for routing)
  * Lightning: Multi-route payments via zap prisms or sequential invoices
@@ -10,12 +10,12 @@
  *
  * Two payment strategies:
  *
- *   Strategy A — PRISM (preferred when all sellers have LNURL):
+ *   Strategy A - PRISM (preferred when all sellers have LNURL):
  *     Build a zap prism with weighted splits matching each seller's price.
  *     One payment splits atomically. Zero custody. No coordination.
  *     Works when all sellers have a Lightning address in their kind 0 profile.
  *
- *   Strategy B — SEQUENTIAL (fallback):
+ *   Strategy B - SEQUENTIAL (fallback):
  *     Generate one invoice per seller, pay them sequentially.
  *     Works universally but creates multiple payment steps.
  *     Wrap in a cart event so the buyer sees it as a single checkout.
@@ -168,11 +168,11 @@ export async function resolvePaymentStrategy(
   return allHaveLnurl ? "prism" : "sequential";
 }
 
-// ─── Pay Cart — Sequential (Universal Fallback) ───────────────────────────────
+// ─── Pay Cart - Sequential (Universal Fallback) ───────────────────────────────
 
 /**
  * Pay a cart by generating and paying one invoice per merchant sequentially.
- * Works universally — no LNURL required.
+ * Works universally - no LNURL required.
  *
  * The buyer's wallet is charged once per seller.
  * This is the correct fallback when prism is not possible.
@@ -206,7 +206,7 @@ export async function payCartSequential(
       // Merchant creates invoice
       const invoice = await merchantWallet.createInvoice({
         amountMsats: totalMsats,
-        description: `Cart payment — ${cart.id}`,
+        description: `Cart payment - ${cart.id}`,
         expiry: 600,
       });
 
@@ -224,10 +224,10 @@ export async function payCartSequential(
   return { strategy: "sequential", totalMsats, payments, successCount, failureCount };
 }
 
-// ─── Pay Cart — Prism (Atomic Split) ──────────────────────────────────────────
+// ─── Pay Cart - Prism (Atomic Split) ──────────────────────────────────────────
 
 /**
- * Pay a cart via a zap prism — one payment splits atomically to all sellers.
+ * Pay a cart via a zap prism - one payment splits atomically to all sellers.
  *
  * Requires all sellers to have a Lightning address (lud16) in their profile.
  * Use resolvePaymentStrategy() first to confirm prism is viable.

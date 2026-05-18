@@ -1,7 +1,7 @@
 /**
- * reports.ts — Bad Actor Reports (Scenario 12, NIP-56)
+ * reports.ts - Bad Actor Reports (Scenario 12, NIP-56)
  *
- * NIP-56 defines kind 1984 — a signed report event targeting a pubkey.
+ * NIP-56 defines kind 1984 - a signed report event targeting a pubkey.
  *
  * Game theory rationale:
  *   Without punishment, defection (scamming) is always rational.
@@ -12,7 +12,7 @@
  *   This makes sustained defection irrational for reputation-building actors.
  *
  * KNOWN LIMITATION (from audit):
- *   Reports are social signals — there is no enforcement mechanism.
+ *   Reports are social signals - there is no enforcement mechanism.
  *   A scammer with no reputation to protect can simply create a new pubkey.
  *   The system works for actors with established reputation. For new entrants,
  *   combine with Web of Trust verification and identity cost mechanisms.
@@ -34,7 +34,7 @@ import {
 /**
  * Publish a NIP-56 report event targeting a pubkey.
  *
- * The report is signed by the reporter's key — they stake their own
+ * The report is signed by the reporter's key - they stake their own
  * reputation on the report. False reports can themselves be reported.
  *
  * @param data        - Report details (target pubkey, reason, evidence)
@@ -165,7 +165,7 @@ export interface TrustAssessment {
 
 /**
  * Quick trust assessment for a pubkey based on their report history.
- * This is a heuristic — not a definitive judgment.
+ * This is a heuristic - not a definitive judgment.
  *
  * riskScore: 0 (no reports) → 10 (many unique reporters with serious reasons)
  */

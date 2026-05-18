@@ -1,15 +1,15 @@
 /**
- * disputes.ts — LNURL-Verify + NIP-85 Dispute Resolution (Scenario 22)
+ * disputes.ts - LNURL-Verify + NIP-85 Dispute Resolution (Scenario 22)
  *
  * NIPs: NIP-85 (trusted assertions, kind 30382)
- * Lightning: LNURL-Verify — proof of payment without wallet access
+ * Lightning: LNURL-Verify - proof of payment without wallet access
  *
  * How disputes are resolved without a trusted third party:
  *   1. Buyer claims non-delivery. Merchant claims payment received.
- *   2. Arbitrator calls verifyPaymentViaLnurl() — checks if payment_hash settled.
+ *   2. Arbitrator calls verifyPaymentViaLnurl() - checks if payment_hash settled.
  *   3. If settled: LNURL server confirms. Arbitrator publishes a NIP-85 assertion.
  *   4. The assertion is permanent, signed, and verifiable by anyone on any relay.
- *   5. Neither party needed to share their wallet — only the payment hash.
+ *   5. Neither party needed to share their wallet - only the payment hash.
  *
  * Why this matters:
  *   Traditional dispute resolution requires the platform to access both wallets.
@@ -159,7 +159,7 @@ export async function publishPaymentAssertion(
 
 /**
  * Fetch all NIP-85 assertions about a specific payment hash.
- * Returns assertions from any attestor — clients should weight
+ * Returns assertions from any attestor - clients should weight
  * assertions by the attestor's known reputation/web-of-trust depth.
  */
 export async function fetchAssertionsForPayment(
@@ -246,7 +246,7 @@ export async function initiateDispute(
 
   const event = finalizeEvent(
     {
-      kind: KIND.REPORT, // 1984 — reusing dispute-style
+      kind: KIND.REPORT, // 1984 - reusing dispute-style
       created_at: Math.floor(Date.now() / 1000),
       tags,
       content: data.reason,
@@ -360,7 +360,7 @@ export async function verifyAndAttest(
   try {
     verification = await verifyPaymentViaLnurl(lnurlVerifyUrl, paymentHash);
   } catch {
-    // LNURL-verify not supported — we can only note the hash, not verify it
+    // LNURL-verify not supported - we can only note the hash, not verify it
     verification = { settled: false };
   }
 

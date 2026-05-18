@@ -1,5 +1,5 @@
 /**
- * relay-discovery.ts — NIP-65 Relay List Discovery (BLIND-01 Fix)
+ * relay-discovery.ts - NIP-65 Relay List Discovery (BLIND-01 Fix)
  *
  * BLIND-01: The build hardcoded 4 relays as defaults. Without NIP-65 support,
  * events published to "the defaults" may never reach a user's actual clients,
@@ -46,7 +46,7 @@ export async function fetchUserRelays(
   const event = await fetchLatestEvent(pubkey, KIND_RELAY_LIST, bootstrapRelays);
 
   if (!event) {
-    // User has no relay list — fall back to defaults
+    // User has no relay list - fall back to defaults
     return {
       pubkey,
       read: DEFAULT_RELAYS,

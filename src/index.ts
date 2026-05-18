@@ -1,7 +1,7 @@
 /**
- * index.ts — Nostr Commerce Skill: Public API
+ * index.ts - Nostr Commerce Skill: Public API
  *
- * Single entry point. All exports are explicitly listed — no barrel wildcards
+ * Single entry point. All exports are explicitly listed - no barrel wildcards
  * that accidentally export internal utilities.
  *
  * Import only what you need. Everything is tree-shakeable.

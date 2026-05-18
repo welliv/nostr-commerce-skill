@@ -1,9 +1,9 @@
 /**
- * reviews.ts — Preimage-Gated Reviews (Scenario 10)
+ * reviews.ts - Preimage-Gated Reviews (Scenario 10)
  *
  * AUDIT FIXES APPLIED:
  *   BUG-08: Reviews now bind the preimage to a specific listing + paymentHash.
- *           Previous version accepted any preimage for any review — allowing
+ *           Previous version accepted any preimage for any review - allowing
  *           replay attacks and merchant self-reviews. Now:
  *             • paymentHash is required (proves a specific payment happened)
  *             • listingEventId is required (binds review to specific listing)
@@ -14,7 +14,7 @@
  *   Without it: fake reviews cost $0 and take 10 seconds.
  *   With it: each fake review requires a real Lightning payment.
  *   SHA256(preimage) === paymentHash is verifiable by any client, permanently.
- *   The reviewer's pubkey signs the claim — they stake their reputation on it.
+ *   The reviewer's pubkey signs the claim - they stake their reputation on it.
  *
  *   REMAINING LIMITATION (documented honestly):
  *   A merchant can still self-review by sending sats from one key to another.
@@ -36,7 +36,7 @@ import {
 // ─── Crypto: SHA-256 Preimage Verification ────────────────────────────────────
 
 /**
- * Get SubtleCrypto — works in browsers and Node.js 18+.
+ * Get SubtleCrypto - works in browsers and Node.js 18+.
  *
  * BUG-11 FIX: In Node.js 18.x, globalThis.crypto may not be available in all
  * contexts. We try globalThis.crypto first, then fall back to node:crypto.
@@ -71,7 +71,7 @@ function bytesToHex(bytes: Uint8Array): string {
  * Verify that SHA256(preimage) === paymentHash.
  *
  * This is the cryptographic proof that the reviewer actually made the payment.
- * SHA-256 is a one-way function — computing a preimage that hashes to a
+ * SHA-256 is a one-way function - computing a preimage that hashes to a
  * specific paymentHash is computationally infeasible.
  *
  * @param preimage     - 64-char hex string (32 bytes), the Lightning payment preimage
@@ -139,7 +139,7 @@ export async function publishReview(
     );
   }
 
-  // Verify preimage before publishing — don't let reviewers post with bad proof
+  // Verify preimage before publishing - don't let reviewers post with bad proof
   const valid = await verifyPreimage(data.preimage, data.paymentHash);
   if (!valid) {
     throw new Error(
@@ -210,9 +210,9 @@ export interface ParsedReview {
   preimage: string;
   paymentHash: string;
   listingEventId?: string;
-  /** false by default — call verifyPreimage() or use fetchVerifiedReviews() */
+  /** false by default - call verifyPreimage() or use fetchVerifiedReviews() */
   isVerified: boolean;
-  /** true if reviewer pubkey === listing pubkey (possible self-review — lower trust) */
+  /** true if reviewer pubkey === listing pubkey (possible self-review - lower trust) */
   isSuspect: boolean;
   createdAt: number;
   eventId: string;
@@ -220,7 +220,7 @@ export interface ParsedReview {
 
 /**
  * Parse a raw kind 31990 event into a structured review.
- * isVerified is false by default — use fetchVerifiedReviews() for batch verification.
+ * isVerified is false by default - use fetchVerifiedReviews() for batch verification.
  */
 export function parseReview(
   event: NostrEvent,
@@ -265,7 +265,7 @@ export async function fetchVerifiedReviews(
   const rawEvents = await fetchReviews(subject, subjectType, relays);
   const parsed = rawEvents.map((e) => parseReview(e, listingAuthorPubkey));
 
-  // Verify each preimage — run in parallel
+  // Verify each preimage - run in parallel
   const verified = await Promise.all(
     parsed.map(async (review) => {
       if (review.preimage && review.paymentHash) {

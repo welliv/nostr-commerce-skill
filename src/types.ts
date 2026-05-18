@@ -1,5 +1,5 @@
 /**
- * types.ts — Shared types for the Nostr Commerce Skill
+ * types.ts - Shared types for the Nostr Commerce Skill
  *
  * Single source of truth. Every other module imports from here.
  * Do not duplicate type definitions in other files.
@@ -87,7 +87,7 @@ export interface ListingPrice {
 }
 
 export interface ListingData {
-  /** Unique stable ID — reuse the same dTag to UPDATE the listing (replaceable event) */
+  /** Unique stable ID - reuse the same dTag to UPDATE the listing (replaceable event) */
   dTag: string;
   title: string;
   summary: string;
@@ -98,7 +98,7 @@ export interface ListingData {
   images?: string[];
   location?: string;
   categories?: string[];
-  /** Unix timestamp — NIP-40 expiration. Relay stops serving event after this. */
+  /** Unix timestamp - NIP-40 expiration. Relay stops serving event after this. */
   expiresAt?: number;
   /** true = kind 30403 draft; false/undefined = kind 30402 active */
   isDraft?: boolean;
@@ -143,7 +143,7 @@ export interface PaymentRequest {
   paymentOptions: PaymentOption[];
 }
 
-// ─── Escrow Types (Scenario 8) — BUG-03 FIXED ───────────────────────────────
+// ─── Escrow Types (Scenario 8) - BUG-03 FIXED ───────────────────────────────
 
 export interface EscrowParams {
   amountMsats: number;
@@ -188,7 +188,7 @@ export interface PaymentResult {
   feeMsats?: number;
 }
 
-// ─── Review Types (Scenario 10) — BUG-08 FIXED ───────────────────────────────
+// ─── Review Types (Scenario 10) - BUG-08 FIXED ───────────────────────────────
 
 export interface ReviewData {
   subject: string;
@@ -287,7 +287,7 @@ export const SEARCH_RELAYS: string[] = [
   "wss://relay.primal.net",
 ];
 
-// ─── NIP Kind Constants — BUG-05 and BUG-06 FIXED ────────────────────────────
+// ─── NIP Kind Constants - BUG-05 and BUG-06 FIXED ────────────────────────────
 
 export const KIND = {
   // Core
@@ -318,15 +318,15 @@ export const KIND = {
   // Commerce listings (NIP-99)
   LISTING_ACTIVE: 30402,
   LISTING_DRAFT: 30403,
-  // NIP-15 marketplace (corrected — BUG-05 FIX)
+  // NIP-15 marketplace (corrected - BUG-05 FIX)
   STALL: 30017,     // was incorrectly 30019
   PRODUCT: 30018,   // was missing
   /**
-   * Reviews — community convention using kind 31990.
+   * Reviews - community convention using kind 31990.
    * BUG-06 FIX: renamed from HANDLER_INFO (NIP-89 meaning) to REVIEW.
    * Kind 31990 is officially "Handler Information" per NIP-89.
    * Its use for reviews is a Shopstr/community convention, not a finalized NIP.
-   * No breakage — same number, honest name.
+   * No breakage - same number, honest name.
    */
   REVIEW: 31990,
   // Trusted assertions (NIP-85)

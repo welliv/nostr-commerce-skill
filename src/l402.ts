@@ -1,5 +1,5 @@
 /**
- * l402.ts — Paid APIs via L402/x402 + NIP-98 (Scenario 20)
+ * l402.ts - Paid APIs via L402/x402 + NIP-98 (Scenario 20)
  *
  * NIPs: NIP-98 (HTTP Auth), Kind 30078 (API endpoint announcement)
  * Lightning: Invoice per API call (L402 protocol)
@@ -104,9 +104,9 @@ export function buildNip98AuthHeader(
 }
 
 function sha256(str: string): Uint8Array {
-  // Simple polyfill — use crypto.subtle in practice
+  // Simple polyfill - use crypto.subtle in practice
   const encoder = new TextEncoder();
-  return encoder.encode(str); // placeholder — real impl uses SubtleCrypto
+  return encoder.encode(str); // placeholder - real impl uses SubtleCrypto
 }
 
 function bufferToHex(buf: Uint8Array): string {
@@ -170,7 +170,7 @@ export async function fetchWithL402(
   // Initial request
   const initialRes = await fetch(url, { ...options, headers });
 
-  // Not a payment required response — return as-is
+  // Not a payment required response - return as-is
   if (initialRes.status !== 402) return initialRes;
 
   // Parse the 402 challenge
@@ -198,7 +198,7 @@ export async function fetchWithL402(
 
 /**
  * Announce a paid API endpoint as a kind 30078 Nostr event.
- * Discoverable via NIP-50 search — any agent can find and use it.
+ * Discoverable via NIP-50 search - any agent can find and use it.
  *
  * @example
  *   await publishApiEndpoint(
@@ -319,7 +319,7 @@ export async function createL402Challenge(
   const invoice = await wallet.createInvoice({
     amountMsats: pricePerCallMsats,
     description,
-    expiry: 300, // 5 min — API calls should be quick
+    expiry: 300, // 5 min - API calls should be quick
   });
 
   // The "macaroon" in simple L402 is just the payment hash
@@ -354,7 +354,7 @@ export async function verifyL402Credentials(
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function extractPaymentHashFromInvoice(invoice: string): string {
-  // BOLT-11 contains the payment hash — for display purposes, return a placeholder
+  // BOLT-11 contains the payment hash - for display purposes, return a placeholder
   // Real extraction requires a bolt11 parsing library
   return invoice.slice(-64); // last 64 chars often contain hash info
 }

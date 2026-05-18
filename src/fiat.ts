@@ -1,18 +1,18 @@
 /**
- * fiat.ts — Fiat Conversion for Listings (Scenario 19)
+ * fiat.ts - Fiat Conversion for Listings (Scenario 19)
  *
  * NIPs: Kind 30402 with ["price", amount, currency] tags
  * Lightning: Client-side sats ↔ fiat conversion
  *
  * The merchant thinks in dollars. The buyer compares in dollars.
  * The listing stores the price in fiat. The client converts at display time.
- * The protocol doesn't care — it's a frontend concern, not a NIP concern.
+ * The protocol doesn't care - it's a frontend concern, not a NIP concern.
  *
  * This unlocks non-Bitcoin-native merchants. A candle maker can list
  * at $25 and never know what a satoshi is. The conversion is transparent,
  * client-controlled, and uses no platform-controlled exchange rate.
  *
- * Uses @getalby/lightning-tools for conversion — their library calls
+ * Uses @getalby/lightning-tools for conversion - their library calls
  * the Alby API which aggregates multiple exchange rate sources.
  *
  * IMPORTANT: Exchange rates change. Always fetch fresh rates before
@@ -30,7 +30,7 @@ export interface ConversionResult {
   fiatAmount: number;
   fiatCurrency: FiatCurrency;
   rate: number;         // sats per 1 fiat unit
-  fetchedAt: number;    // unix timestamp — refresh if > 5 min old
+  fetchedAt: number;    // unix timestamp - refresh if > 5 min old
 }
 
 // ─── Rate Cache (5-minute TTL) ────────────────────────────────────────────────

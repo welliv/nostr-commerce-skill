@@ -1,5 +1,5 @@
 /**
- * notifications.ts — Real-Time Payment Notifications (Scenario 21)
+ * notifications.ts - Real-Time Payment Notifications (Scenario 21)
  *
  * NIPs: NIP-44 (encryption), NIP-59 (gift-wrap), kind 1059
  * Lightning: NWC subscribeNotifications (replaces all polling)
@@ -11,15 +11,15 @@
  *
  * Two-layer notification system:
  *
- * Layer 1 — NWC Notifications (merchant's own wallet):
+ * Layer 1 - NWC Notifications (merchant's own wallet):
  *   The merchant subscribes to their own wallet via NWC.
  *   When a buyer pays, the merchant's wallet fires immediately.
  *   Zero latency. No Nostr relay involved.
  *
- * Layer 2 — Nostr Gift-Wrap Notifications (cross-client alerts):
+ * Layer 2 - Nostr Gift-Wrap Notifications (cross-client alerts):
  *   After a payment settles, publish an encrypted NIP-59 notification
  *   to the buyer's preferred relays with the preimage and order details.
- *   The buyer's Nostr client receives this — even if they've closed
+ *   The buyer's Nostr client receives this - even if they've closed
  *   the checkout page. Persistent, relay-delivered, encrypted.
  */
 
@@ -52,7 +52,7 @@ export interface NotificationSession {
  * Subscribe to real-time payment notifications from a wallet.
  *
  * This is the primary notification mechanism for merchants.
- * Call this once on server startup — it stays open indefinitely.
+ * Call this once on server startup - it stays open indefinitely.
  *
  * When a buyer pays an invoice:
  *   → onPayment fires within milliseconds
@@ -112,7 +112,7 @@ export async function subscribeToWalletPayments(
  *   - Next steps (delivery tracking, download link, etc.)
  *
  * The relay sees only: "an event was addressed to this pubkey."
- * Content is fully encrypted — only the buyer can read it.
+ * Content is fully encrypted - only the buyer can read it.
  *
  * @example
  *   await subscribeToWalletPayments(wallet, async (payment: any) => {

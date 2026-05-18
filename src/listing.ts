@@ -1,11 +1,11 @@
 /**
- * listing.ts — Product Listings (Scenarios 2, 3, 4, 19)
+ * listing.ts - Product Listings (Scenarios 2, 3, 4, 19)
  *
  * Covers:
- *   NIP-99  — kind 30402 (active listing) / 30403 (draft)
- *   NIP-40  — expiration tag for time-limited listings
- *   NIP-50  — search-capable relay queries
- *   NIP-19  — naddr encoding for shareable product links
+ *   NIP-99  - kind 30402 (active listing) / 30403 (draft)
+ *   NIP-40  - expiration tag for time-limited listings
+ *   NIP-50  - search-capable relay queries
+ *   NIP-19  - naddr encoding for shareable product links
  *
  * AUDIT FIX APPLIED:
  *   BLIND-07: Added getListingShareableLink() → returns naddr string.
@@ -29,10 +29,10 @@ import {
 
 /**
  * Build a kind 30402/30403 listing event template.
- * Does NOT sign or publish — call signAndPublishListing() for the full flow.
+ * Does NOT sign or publish - call signAndPublishListing() for the full flow.
  *
  * To UPDATE a listing: call again with the same dTag. Replaceable events
- * (kind 30402) are identified by author pubkey + dTag — the relay replaces
+ * (kind 30402) are identified by author pubkey + dTag - the relay replaces
  * the old version with the new one automatically.
  */
 export function buildListingTemplate(data: ListingData): {
@@ -41,7 +41,7 @@ export function buildListingTemplate(data: ListingData): {
   tags: string[][];
   content: string;
 } {
-  if (!data.dTag) throw new Error("dTag is required — it is the listing's stable identifier.");
+  if (!data.dTag) throw new Error("dTag is required - it is the listing's stable identifier.");
   if (!data.title) throw new Error("title is required.");
   if (!data.price?.amount) throw new Error("price.amount is required.");
   if (!data.price?.currency) throw new Error("price.currency is required.");
@@ -76,7 +76,7 @@ export function buildListingTemplate(data: ListingData): {
     tags.push(["t", cat.toLowerCase().replace(/\s+/g, "-")]);
   }
 
-  // NIP-40: expiration — relay auto-purges event after this timestamp
+  // NIP-40: expiration - relay auto-purges event after this timestamp
   if (data.expiresAt != null) {
     const now = Math.floor(Date.now() / 1000);
     if (data.expiresAt <= now) {
@@ -103,7 +103,7 @@ export function buildListingTemplate(data: ListingData): {
  *
  * @returns PublishResult containing the event ID and per-relay success status
  *
- * To UPDATE: call again with the same dTag — relays replace the old version.
+ * To UPDATE: call again with the same dTag - relays replace the old version.
  * To DELETE: call deleteListing() with the event ID.
  */
 export async function signAndPublishListing(
@@ -139,13 +139,13 @@ export async function signAndPublishListing(
  * Generate a shareable naddr link for a listing.
  *
  * BLIND-07 FIX: Without this, there was no way to share a listing URL.
- * naddr is stable — it identifies the listing by author + dTag, not by
+ * naddr is stable - it identifies the listing by author + dTag, not by
  * event ID. So the link remains valid even after the listing is updated.
  *
  * @example
  *   const link = getListingShareableLink("candle-001", merchantPubkey, relays);
  *   // → "naddr1qqq..."
- *   // Share this link — any Nostr client that supports NIP-99 can open it.
+ *   // Share this link - any Nostr client that supports NIP-99 can open it.
  */
 export function getListingShareableLink(
   dTag: string,
@@ -165,7 +165,7 @@ export function getListingShareableLink(
 /**
  * Publish a kind 5 deletion event.
  * Compliant relays will stop serving the targeted event.
- * NOTE: Deletion is advisory — non-compliant relays may ignore it.
+ * NOTE: Deletion is advisory - non-compliant relays may ignore it.
  */
 export async function deleteListing(
   listingEventId: string,

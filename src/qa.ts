@@ -1,5 +1,5 @@
 /**
- * qa.ts — Product Q&A via NIP-22 Comments (Scenario 11)
+ * qa.ts - Product Q&A via NIP-22 Comments (Scenario 11)
  *
  * NIP-22 defines kind 1111 for comment threads on any root event.
  * Here we use it for Q&A threads on kind 30402 product listings.
@@ -8,7 +8,7 @@
  *   Without it: buyers DM merchants, questions are answered privately,
  *               the same question is asked 100 times, returns increase.
  *   With it: every answered question is public, permanent, and searchable.
- *            The knowledge base compounds — future buyers benefit from
+ *            The knowledge base compounds - future buyers benefit from
  *            questions asked by previous buyers.
  *   This is a positive externality: answering one question helps everyone.
  *   Protocol-native, no CMS required, no moderation needed.
@@ -31,8 +31,8 @@ import {
  * Post a public question on a product listing.
  *
  * The question is a kind 1111 comment event referencing:
- *   K — the root event kind (30402)
- *   E — the listing event ID + relay hint + listing author pubkey
+ *   K - the root event kind (30402)
+ *   E - the listing event ID + relay hint + listing author pubkey
  *
  * Anyone can see the question. The merchant is notified via their p-tag.
  *
@@ -62,7 +62,7 @@ export async function postQuestion(
       kind: KIND.COMMENT, // 1111
       created_at: Math.floor(Date.now() / 1000),
       tags: [
-        // Root event kind — required by NIP-22
+        // Root event kind - required by NIP-22
         ["K", String(KIND.LISTING_ACTIVE)],
         // Root event reference with relay hint and author pubkey
         ["E", data.listingEventId, relayHint, data.listingAuthorPubkey],

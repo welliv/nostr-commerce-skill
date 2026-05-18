@@ -1,12 +1,12 @@
 /**
- * identity.ts — Nostr Identity & Onboarding (Scenarios 1, 5)
+ * identity.ts - Nostr Identity & Onboarding (Scenarios 1, 5)
  *
  * Covers:
- *   NIP-01  — keypair generation and event signing
- *   NIP-07  — browser extension signer (Alby, nos2x, Flamingo)
- *   NIP-19  — bech32 encoding (npub, nsec, nprofile, naddr)
- *   NIP-05  — DNS-based verification (user@domain.com → pubkey)
- *   NIP-39  — external identity claims (GitHub, Twitter, etc.)
+ *   NIP-01  - keypair generation and event signing
+ *   NIP-07  - browser extension signer (Alby, nos2x, Flamingo)
+ *   NIP-19  - bech32 encoding (npub, nsec, nprofile, naddr)
+ *   NIP-05  - DNS-based verification (user@domain.com → pubkey)
+ *   NIP-39  - external identity claims (GitHub, Twitter, etc.)
  *
  * AUDIT FIXES APPLIED:
  *   BUG-02: signWithNip07 now fetches pubkey from extension and sets it
@@ -41,7 +41,7 @@ import {
 /**
  * Generate a fresh Nostr identity (keypair).
  *
- * SECURITY — returned privateKey MUST be stored securely:
+ * SECURITY - returned privateKey MUST be stored securely:
  *   Browser  → Use saveIdentityEncrypted() from storage.ts
  *   Server   → Store in secrets manager (AWS Secrets Manager, HashiCorp Vault)
  *   Never    → Log, hardcode, commit, or transmit over HTTP
@@ -80,7 +80,7 @@ export function nsecToPrivateKey(nsec: string): Uint8Array {
 
 /**
  * Encode a private key Uint8Array to nsec bech32 string.
- * Only use for display/export — never store the string in plaintext.
+ * Only use for display/export - never store the string in plaintext.
  */
 export function privateKeyToNsec(privateKey: Uint8Array): string {
   return nsecEncode(privateKey);
@@ -129,7 +129,7 @@ export async function getNip07Pubkey(): Promise<string> {
  *
  * BUG-02 FIX: NIP-07 specification requires the event to have `pubkey` set
  * before passing to signEvent(). Previous implementation passed a bare
- * EventTemplate (no pubkey field) — extensions throw or produce invalid events.
+ * EventTemplate (no pubkey field) - extensions throw or produce invalid events.
  *
  * Fix: fetch pubkey from extension first, inject it, then sign.
  * The extension prompts the user to approve.
@@ -193,9 +193,9 @@ export async function verifyNip05(
 
 /**
  * Perform full identity verification for a pubkey:
- *   NIP-05  — DNS domain verification
- *   NIP-39  — external identity links (GitHub, Twitter, etc.)
- *   NIP-85  — third-party trust attestations
+ *   NIP-05  - DNS domain verification
+ *   NIP-39  - external identity links (GitHub, Twitter, etc.)
+ *   NIP-85  - third-party trust attestations
  *
  * Returns a structured result the UI can use to display trust signals.
  */
@@ -218,7 +218,7 @@ export async function verifyIdentity(
         nip05Valid = await verifyNip05(content.nip05, pubkey);
       }
     } catch {
-      // malformed profile content — skip
+      // malformed profile content - skip
     }
 
     // NIP-39: external identity claims from "i" tags on kind 0
@@ -265,7 +265,7 @@ export interface ProfileData {
  * Pass to signEvent() or signWithNip07(), then publishToRelays().
  */
 export function buildProfileEvent(profile: ProfileData): EventTemplate {
-  // Filter out undefined values — JSON.stringify omits them anyway,
+  // Filter out undefined values - JSON.stringify omits them anyway,
   // but being explicit prevents confusion
   const content: Record<string, string> = {};
   if (profile.name) content.name = profile.name;
@@ -293,7 +293,7 @@ export function buildProfileEvent(profile: ProfileData): EventTemplate {
  *
  * @example
  *   const link = encodeListingAddress("candle-001", merchantPubkey, relays);
- *   // → "naddr1..."  — shareable link to this listing
+ *   // → "naddr1..."  - shareable link to this listing
  */
 export function encodeListingAddress(
   dTag: string,

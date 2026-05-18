@@ -1,18 +1,18 @@
 import { createHash, randomBytes } from "node:crypto";
 import { nwc } from "@getalby/sdk";
 /**
- * escrow.ts — Lightning Escrow with NIP-40 Deadline (Scenario 8)
+ * escrow.ts - Lightning Escrow with NIP-40 Deadline (Scenario 8)
  *
  * AUDIT FIXES APPLIED:
  *   BUG-03:   amountMsats added to EscrowSession (type fix)
- *   BUG-07:   fetchBuyerEscrowEvents — fixed overbroad #d filter
+ *   BUG-07:   fetchBuyerEscrowEvents - fixed overbroad #d filter
  *   BLIND-04: releaseEscrow() now has real implementations for LND + Alby Hub
  *   BLIND-06: waitForPayment uses exponential backoff, not flat polling
  *   BLIND-08: In-memory store throws in production if not acknowledged
  *
  * HOW ESCROW WORKS (no trusted third party):
- *   1. Merchant creates a hold invoice — a BOLT-11 where funds lock on payment
- *   2. Buyer pays — funds held in Lightning network, NOT released to merchant
+ *   1. Merchant creates a hold invoice - a BOLT-11 where funds lock on payment
+ *   2. Buyer pays - funds held in Lightning network, NOT released to merchant
  *   3. Merchant ships / delivers the product
  *   4. Merchant reveals preimage → Lightning settles to merchant
  *   5. If deadline passes before release → buyer auto-refunded
@@ -22,7 +22,7 @@ import { nwc } from "@getalby/sdk";
  * HOLD INVOICE SUPPORT:
  *   ✅ LND (via hodl invoice REST API)
  *   ✅ Alby Hub (via Hub admin API)
- *   ✅ Core Lightning (via hold invoice plugin — see comments)
+ *   ✅ Core Lightning (via hold invoice plugin - see comments)
  *   ❌ Most custodial wallets (Wallet of Satoshi, etc.)
  *   Check your wallet before deploying escrow in production.
  */
@@ -180,7 +180,7 @@ export class AlbyHubEscrowBackend implements EscrowBackend {
 
 /**
  * BLIND-08 FIX: Production safety check.
- * The in-memory store resets on every restart — all in-flight escrows are lost.
+ * The in-memory store resets on every restart - all in-flight escrows are lost.
  * In production, this means merchants who restart their server mid-escrow
  * can no longer release holds → goods are delivered but payment is lost.
  *
@@ -240,7 +240,7 @@ export async function createEscrow(
 
   const invoiceResult = await merchantWallet.createInvoice({
     amountMsats: params.amountMsats,
-    description: `Escrow — order ${params.orderId}`,
+    description: `Escrow - order ${params.orderId}`,
     expiry: holdDuration,
   });
 
@@ -352,7 +352,7 @@ export async function waitForPayment(
     if (Date.now() - startedAt > maxDurationMs) {
       throw new Error(
         `Payment polling timed out after ${maxDurationMs / 1000}s for order ${orderId}. ` +
-          `The invoice may still be valid — check manually with lookupInvoice().`
+          `The invoice may still be valid - check manually with lookupInvoice().`
       );
     }
 
@@ -367,7 +367,7 @@ export async function waitForPayment(
         return session;
       }
     } catch {
-      // Lookup failure is non-fatal — keep polling
+      // Lookup failure is non-fatal - keep polling
     }
 
     // BLIND-06 FIX: Exponential backoff
@@ -419,13 +419,13 @@ export async function releaseEscrow(
     );
   }
 
-  // Check deadline — hold invoices auto-expire, cannot release after deadline
+  // Check deadline - hold invoices auto-expire, cannot release after deadline
   const now = Math.floor(Date.now() / 1000);
   if (now > session.expiresAt) {
     session.status = "expired";
     storeEscrowSession(session);
     throw new Error(
-      `Cannot release escrow for order ${orderId} — hold invoice has expired. ` +
+      `Cannot release escrow for order ${orderId} - hold invoice has expired. ` +
         `The buyer was automatically refunded at ${new Date(session.expiresAt * 1000).toISOString()}.`
     );
   }
@@ -485,7 +485,7 @@ export async function fetchBuyerEscrowEvents(
     relays
   ) as NostrEvent[];
 
-  // BUG-07 FIX: Client-side filter — only keep events with d-tag starting "escrow:"
+  // BUG-07 FIX: Client-side filter - only keep events with d-tag starting "escrow:"
   return events.filter((e) =>
     e.tags.some((t) => t[0] === "d" && t[1]?.startsWith("escrow:"))
   );

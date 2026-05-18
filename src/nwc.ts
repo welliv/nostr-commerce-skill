@@ -1,7 +1,7 @@
 /**
- * nwc.ts — Nostr Wallet Connect (NIP-47, Scenario 7)
+ * nwc.ts - Nostr Wallet Connect (NIP-47, Scenario 7)
  *
- * Provides Lightning wallet operations via NWC — the only standardized way
+ * Provides Lightning wallet operations via NWC - the only standardized way
  * to connect a Lightning wallet to a Nostr application without custody.
  *
  * AUDIT FIX APPLIED:
@@ -11,8 +11,8 @@
  *                     new nwc.NWCClient({ nostrWalletConnectUrl: url })
  *
  * SECURITY RULES (enforced by design):
- *   1. NWC connection URL contains a secret — ALWAYS load from environment variable.
- *   2. Use a dedicated connection per app — never reuse your main wallet connection.
+ *   1. NWC connection URL contains a secret - ALWAYS load from environment variable.
+ *   2. Use a dedicated connection per app - never reuse your main wallet connection.
  *   3. Set a spending budget in Alby Hub before creating the connection.
  *   4. This module never logs the connection URL, any preimage, or any secret.
  *   5. Budget = your blast radius if the NWC_CONNECTION_URL is ever compromised.
@@ -30,7 +30,7 @@ export class NostrWalletConnect {
   /**
    * @param connectionUrl - nostr+walletconnect://<pubkey>?relay=<url>&secret=<hex>
    *
-   * SECURITY: Load from process.env.NWC_CONNECTION_URL — never hardcode.
+   * SECURITY: Load from process.env.NWC_CONNECTION_URL - never hardcode.
    * Get this URL from: Alby Hub → App Connections → New Connection
    *                    Set a sats budget before copying the URL.
    */
@@ -116,7 +116,7 @@ export class NostrWalletConnect {
   /**
    * Pay a BOLT-11 Lightning invoice.
    *
-   * Returns the preimage — your cryptographic proof of payment.
+   * Returns the preimage - your cryptographic proof of payment.
    * STORE THIS. It is required for:
    *   - Scenario 9: Proof of Payment (NIP-85 attestation)
    *   - Scenario 10: Preimage-gated reviews (kind 31990)
@@ -152,7 +152,7 @@ export class NostrWalletConnect {
    * Look up an invoice by payment hash to check if it has been paid.
    *
    * Use this to poll for escrow payment status (Scenario 8).
-   * For high-volume polling, use exponential backoff — see escrow.ts.
+   * For high-volume polling, use exponential backoff - see escrow.ts.
    */
   async lookupInvoice(paymentHash: string): Promise<{
     paid: boolean;

@@ -1,9 +1,9 @@
 /**
- * zaps.ts — Lightning Zaps & Payment Prisms (Scenarios 13, 14)
+ * zaps.ts - Lightning Zaps & Payment Prisms (Scenarios 13, 14)
  *
  * Covers:
- *   NIP-57  — zap requests (kind 9734) and zap receipts (kind 9735)
- *   Prisms  — multi-recipient payment splits via weighted zap tags
+ *   NIP-57  - zap requests (kind 9734) and zap receipts (kind 9735)
+ *   Prisms  - multi-recipient payment splits via weighted zap tags
  *
  * AUDIT FIX:
  *   BUG-10: The BOLT-11 amount parser is documented as display-only.
@@ -89,7 +89,7 @@ export async function fetchLnurlMetadata(lnurlEndpoint: string): Promise<{
 
 /**
  * Build a NIP-57 kind 9734 zap request event.
- * This is sent to the LNURL endpoint — NOT published to Nostr directly.
+ * This is sent to the LNURL endpoint - NOT published to Nostr directly.
  *
  * For a payment prism (split), include multiple recipients with weights.
  */
@@ -110,7 +110,7 @@ export function buildZapRequest(
   ];
 
   if (params.recipients.length === 1) {
-    // Single recipient — standard zap
+    // Single recipient - standard zap
     tags.push(["p", params.recipients[0].pubkey]);
   } else {
     // Prism: multiple recipients with weights

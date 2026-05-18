@@ -1,5 +1,5 @@
 /**
- * subscriptions.ts — Recurring Subscriptions (Scenario 15)
+ * subscriptions.ts - Recurring Subscriptions (Scenario 15)
  *
  * NIPs: NIP-99 (kind 30402 with frequency tag), NIP-47 (NWC budget permissions)
  * Lightning: Recurring NWC payments with budget cap
@@ -9,11 +9,11 @@
  *      e.g. ["price", "5000", "SATS", "month"]
  *   2. Buyer creates a BUDGETED NWC connection for this subscription.
  *      The budget cap = max sats per period. This is set in Alby Hub.
- *      The buyer controls the cap — they can revoke at any time.
+ *      The buyer controls the cap - they can revoke at any time.
  *   3. App holds the budgeted NWC URL and charges the buyer each period
  *      by calling makeInvoice + payInvoice automatically.
  *   4. The subscription state is a Nostr event (kind 30402 variant) that
- *      the app publishes to relays — visible, auditable, cancellable.
+ *      the app publishes to relays - visible, auditable, cancellable.
  *
  * Key insight: The NWC budget cap IS the subscription authorization.
  * No Stripe, no billing portal, no hidden charges. The buyer can see
@@ -57,7 +57,7 @@ export interface SubscriptionRecord {
   planDTag: string;
   buyerPubkey: string;
   merchantPubkey: string;
-  /** Budgeted NWC URL from buyer — used to charge each period */
+  /** Budgeted NWC URL from buyer - used to charge each period */
   buyerNwcUrl: string;
   status: SubscriptionStatus;
   amountMsats: number;
@@ -100,7 +100,7 @@ export function getDueSubscriptions(): SubscriptionRecord[] {
 
 /**
  * Publish a subscription plan as a kind 30402 listing with frequency tag.
- * This is the merchant-side action — making the plan discoverable on relays.
+ * This is the merchant-side action - making the plan discoverable on relays.
  *
  * @example
  *   await publishSubscriptionPlan(
@@ -142,7 +142,7 @@ export async function publishSubscriptionPlan(
 /**
  * Create a subscription record when a buyer subscribes to a plan.
  *
- * The buyer provides a BUDGETED NWC URL — a connection to their wallet
+ * The buyer provides a BUDGETED NWC URL - a connection to their wallet
  * with a spending cap matching the subscription amount. This URL must be:
  *   1. Created in Alby Hub: App Connections → New Connection
  *   2. Budget set to: plan.amountMsats per period
@@ -210,7 +210,7 @@ export async function chargeSubscription(
   // Step 1: Merchant creates invoice
   const invoice = await merchantWallet.createInvoice({
     amountMsats: sub.amountMsats,
-    description: `Subscription: ${sub.planDTag} — period ${sub.chargeCount + 1}`,
+    description: `Subscription: ${sub.planDTag} - period ${sub.chargeCount + 1}`,
     expiry: 3600,
   });
 
@@ -263,7 +263,7 @@ export function resumeSubscription(id: string): SubscriptionRecord {
   return sub;
 }
 
-/** Cancel a subscription. Irreversible — buyer must re-subscribe. */
+/** Cancel a subscription. Irreversible - buyer must re-subscribe. */
 export function cancelSubscription(id: string): SubscriptionRecord {
   const sub = getSubscription(id);
   if (!sub) throw new Error(`Subscription ${id} not found.`);
@@ -308,10 +308,10 @@ function frequencyToSeconds(f: SubscriptionFrequency): number {
 export function describeSubscription(sub: SubscriptionRecord): string {
   const next = new Date(sub.nextChargeAt * 1000).toLocaleString();
   const statusLabels: Record<SubscriptionStatus, string> = {
-    active:   `✅ Active — next charge: ${next}`,
-    paused:   `⏸️  Paused — next charge paused`,
+    active:   `✅ Active - next charge: ${next}`,
+    paused:   `⏸️  Paused - next charge paused`,
     cancelled:`❌ Cancelled`,
-    past_due: `⚠️  Past due — last charge failed`,
+    past_due: `⚠️  Past due - last charge failed`,
   };
   return `${statusLabels[sub.status]} | ${Math.floor(sub.amountMsats/1000)} sats/${sub.frequency} | ${sub.chargeCount} charges`;
 }

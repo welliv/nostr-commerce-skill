@@ -1,5 +1,5 @@
 /**
- * zapvertising.ts — Incentivized Advertising (Scenario 18)
+ * zapvertising.ts - Incentivized Advertising (Scenario 18)
  *
  * NIPs: NIP-57 (zap delivery), NIP-50 (audience search)
  * Lightning: Direct sats-to-viewer payment model
@@ -9,7 +9,7 @@
  *
  * Zapvertising: Advertiser finds audience via NIP-50 search,
  * zaps them directly with a message. Viewer receives sats.
- * They can ignore the ad — they keep the sats either way.
+ * They can ignore the ad - they keep the sats either way.
  * Attention economy inverted: pay the viewer, not the middleman.
  */
 

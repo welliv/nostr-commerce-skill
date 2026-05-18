@@ -1,5 +1,5 @@
 /**
- * platform-fees.ts — Platform Fees via Wrapped Invoices (Scenario 17)
+ * platform-fees.ts - Platform Fees via Wrapped Invoices (Scenario 17)
  *
  * NIPs: NIP-42 (authenticated relay), kind 30402 (listing with fee tags)
  * Lightning: Same payment hash, fee extracted at protocol level
@@ -28,7 +28,7 @@
  * ALTERNATIVE (if merchant has no LNURL):
  *   Platform creates its own invoice for the total (merchant + fee)
  *   After payment, platform forwards merchant's share via NWC
- *   This requires the platform to temporarily hold funds — honest about that.
+ *   This requires the platform to temporarily hold funds - honest about that.
  */
 
 import { finalizeEvent, verifyEvent } from "nostr-tools";
@@ -96,7 +96,7 @@ export function calculateFee(
 
 /**
  * Create a wrapped invoice using LNURL prism splitting.
- * This is the non-custodial path — platform never holds funds.
+ * This is the non-custodial path - platform never holds funds.
  *
  * Requires merchant to have a Lightning address in their profile.
  * Check with resolveLnurlFromProfile() before calling this.
@@ -152,7 +152,7 @@ export async function createPrismWrappedInvoice(
  * Platform creates the invoice, collects full amount, forwards merchant's share.
  *
  * This REQUIRES the platform to hold funds temporarily.
- * Honest about the trade-off — disclose this to users.
+ * Honest about the trade-off - disclose this to users.
  */
 export async function createCustodialWrappedInvoice(
   merchantWallet: NostrWalletConnect,
@@ -197,7 +197,7 @@ export async function createCustodialWrappedInvoice(
 
 /**
  * Publish a listing with transparent platform fee tags.
- * The fee is visible to any client — no fine print.
+ * The fee is visible to any client - no fine print.
  */
 export async function publishFeeTaggedListing(
   listing: {
