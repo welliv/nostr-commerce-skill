@@ -336,3 +336,194 @@ export const KIND = {
   // App data (NIP-78)
   APP_DATA: 30078,
 } as const;
+
+export type SubscriptionFrequency = "day" | "week" | "month" | "year";
+
+export interface SubscriptionPlan {
+  dTag: string;
+  title: string;
+  description: string;
+  amountMsats: number;
+  currency: "SATS" | "USD" | string;
+  frequency: SubscriptionFrequency;
+  merchantLud16: string;
+  merchantPubkey: string;
+  trialDays?: number;
+}
+
+export interface ActiveSubscription {
+  id: string;
+  planDTag: string;
+  merchantPubkey: string;
+  merchantLud16: string;
+  amountMsats: number;
+  frequency: SubscriptionFrequency;
+  startedAt: number;
+  nextPaymentAt: number;
+  lastPaymentHash?: string;
+  lastPreimage?: string;
+  status: "active" | "paused" | "cancelled" | "payment_failed";
+  nwcUrl: string;
+}
+
+export interface CartItem {
+  listingEventId: string;
+  dTag: string;
+  merchantPubkey: string;
+  merchantLud16: string;
+  quantity: number;
+  unitPriceMsats: number;
+  title: string;
+  imageUrl?: string;
+}
+
+export interface Cart {
+  id: string;
+  items: CartItem[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface CartSummary {
+  byMerchant: {
+    pubkey: string;
+    lud16: string;
+    items: CartItem[];
+    subtotalMsats: number;
+  }[];
+  grandTotalMsats: number;
+  merchantCount: number;
+  itemCount: number;
+}
+
+export interface PlatformFeeConfig {
+  platformPubkey: string;
+  platformLud16: string;
+  feePercent: number;
+  feeMinSats?: number;
+  feeMaxSats?: number;
+}
+
+export interface FeeCalculation {
+  originalMsats: number;
+  merchantMsats: number;
+  feeMsats: number;
+  totalMsats: number;
+  feePercent: number;
+}
+
+export interface ZapAdConfig {
+  adMessage: string;
+  adEventId?: string;
+  amountPerViewMsats: number;
+  totalBudgetMsats: number;
+  keywords: string[];
+  relays: string[];
+  maxRecipients?: number;
+}
+
+export interface ZapAdResult {
+  recipientPubkey: string;
+  amountMsats: number;
+  paid: boolean;
+  error?: string;
+}
+
+export interface CampaignResult {
+  targeted: number;
+  zappable: number;
+  attempted: number;
+  succeeded: number;
+  totalSpentMsats: number;
+  results: ZapAdResult[];
+}
+
+export type FiatCurrency = "USD" | "EUR" | "GBP" | "JPY" | "AUD" | "CAD" | string;
+
+export interface FiatRate {
+  currency: FiatCurrency;
+  satsPerUnit: number;
+  msatsPerUnit: number;
+  fetchedAt: number;
+}
+
+export interface L402Config {
+  priceMsats: number;
+  merchantNwcUrl: string;
+  rootKey: string;
+  apiName: string;
+}
+
+export interface L402Token {
+  paymentHash: string;
+  hmac: string;
+  issuedAt: number;
+  apiName: string;
+}
+
+export interface ApiEndpointInfo {
+  dTag: string;
+  name: string;
+  description: string;
+  endpoint: string;
+  priceMsats: number;
+  priceUnit: "per_request" | "per_kb" | "per_minute";
+  categories: string[];
+  publisherPubkey: string;
+}
+
+export type PaymentEventType = "payment_received" | "payment_sent" | "hold_invoice_accepted";
+
+export interface PaymentNotification {
+  type: PaymentEventType;
+  paymentHash: string;
+  amountMsats: number;
+  preimage?: string;
+  description?: string;
+  settledAt: number;
+}
+
+export interface OrderNotification {
+  orderId: string;
+  buyerPubkey: string;
+  preimage: string;
+  paymentHash: string;
+  message?: string;
+  receivedAt: number;
+}
+
+export type DisputeResolution = "buyer_wins" | "seller_wins" | "split";
+
+export interface DisputeData {
+  orderId: string;
+  merchantPubkey: string;
+  buyerPubkey: string;
+  paymentHash: string;
+  reason: string;
+  evidenceEventIds: string[];
+}
+
+export interface PaymentAssertionData {
+  subjectPubkey: string;
+  paymentHash: string;
+  settled: boolean;
+  amountMsats: number;
+  settledAt?: number;
+  orderId?: string;
+  note?: string;
+}
+
+export interface LnurlVerifyResult {
+  settled: boolean;
+  preimage?: string;
+  amount?: number;
+}
+
+export interface NotificationPayment {
+  type: "payment_received" | "payment_sent";
+  paymentHash: string;
+  amountMsats: number;
+  preimage?: string;
+  description?: string;
+  settledAt: number;
+}

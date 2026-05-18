@@ -256,3 +256,16 @@ export {
 } from "./reports.js";
 
 export type { ParsedReport, TrustAssessment } from "./reports.js";
+
+// ─── V2 Modules (Scenarios 15–22 + NWCEscrowBackend) ───────────────────────
+export * from "./fiat.js";
+export * from "./subscriptions.js";
+export * from "./cart.js";
+export * from "./platform-fees.js";
+export * from "./zapvertising.js";
+export * from "./notifications.js";
+export * from "./disputes.js";
+export * from "./l402.js";
+
+// NWCEscrowBackend (V2 improvement to Scenario 8)
+export { NWCEscrowBackend, createEscrowWithNWC } from "./escrow.js";

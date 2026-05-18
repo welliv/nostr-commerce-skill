@@ -1,3 +1,5 @@
+import { createHash, randomBytes } from "node:crypto";
+import { nwc } from "@getalby/sdk";
 /**
  * escrow.ts — Lightning Escrow with NIP-40 Deadline (Scenario 8)
  *
@@ -502,4 +504,64 @@ export function describeEscrow(session: EscrowSession): string {
     expired:  `⌛ Invoice expired at ${deadline}. Buyer was automatically refunded.`,
   };
   return messages[session.status];
+}
+
+export class NWCEscrowBackend implements EscrowBackend {
+  private readonly nwcUrl: string;
+
+  constructor(nwcUrl: string) {
+    if (!nwcUrl.startsWith("nostr+walletconnect://")) {
+      throw new Error("NWCEscrowBackend requires a valid NWC connection URL");
+    }
+    this.nwcUrl = nwcUrl;
+  }
+
+  async settleHoldInvoice(paymentHash: string, preimage: string): Promise<void> {
+    const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
+    try {
+      await (client as any).settleHoldInvoice({ preimage });
+    } finally {
+      await client.close();
+    }
+  }
+
+  async cancelHoldInvoice(paymentHash: string): Promise<void> {
+    const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
+    try {
+      await (client as any).cancelHoldInvoice({ payment_hash: paymentHash });
+    } finally {
+      await client.close();
+    }
+  }
+
+  async createHoldInvoice(params: { amountMsats: number; description: string; expiry?: number }) {
+    const preimage = randomBytes(32).toString("hex");
+    const paymentHash = createHash("sha256").update(Buffer.from(preimage, "hex")).digest("hex");
+    const client = new (nwc as any).NWCClient({ nostrWalletConnectUrl: this.nwcUrl });
+    try {
+      const result = await (client as any).makeHoldInvoice({
+        amount: params.amountMsats,
+        description: params.description,
+        payment_hash: paymentHash,
+      });
+      return { paymentHash, invoice: result.invoice, preimage };
+    } finally {
+      await client.close();
+    }
+  }
+}
+
+export async function createEscrowWithNWC(params: any, backend: NWCEscrowBackend) {
+  const hold = await backend.createHoldInvoice({
+    amountMsats: params.amountMsats,
+    description: params.description || "Escrow",
+  });
+  return {
+    ...params,
+    paymentHash: hold.paymentHash,
+    preimage: hold.preimage,
+    invoice: hold.invoice,
+    status: "pending",
+    backend: "nwc",
+  };
 }
