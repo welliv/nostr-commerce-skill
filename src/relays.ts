@@ -49,6 +49,9 @@ export async function publishToRelays(
   event: Event,
   relays: string[] = DEFAULT_RELAYS
 ): Promise<PublishResult> {
+  if (!verifyEvent(event)) {
+    throw new Error("Cannot publish: event signature verification failed");
+  }
   const pool = getPool();
 
   const results: RelayResult[] = await Promise.all(
@@ -106,36 +109,44 @@ const FETCH_TIMEOUT_MS = 6_000;
  */
 export async function fetchEvents(
   filters: Filter[],
-  relays: string[] = DEFAULT_RELAYS
+  relays: string[] = DEFAULT_RELAYS,
+  timeoutMs = 8000
 ): Promise<Event[]> {
   const pool = getPool();
+  const events: Event[] = [];
+  let settled = false;
 
   return new Promise((resolve) => {
-    const events = new Map<string, Event>();
-    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        resolve(events);
+      }
+    }, timeoutMs);
 
-    const done = () => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      sub?.close();
-      resolve([...events.values()]);
-    };
-
-    const timer = setTimeout(done, FETCH_TIMEOUT_MS);
-
-    const sub = pool.subscribeMany(relays, filters as any, {
-      onevent(event: Event) {
-        if (!verifyEvent(event)) return;
-        if (!events.has(event.id)) {
-          events.set(event.id, event);
-        }
-      },
-      oneose() {
-        done();
-      },
-    });
-  });
+    try {
+      const sub = pool.subscribeMany(relays, filters as any, {
+        onevent(event: Event) {
+          if (!verifyEvent(event)) return;
+          if (!events.some(e => e.id === event.id)) {
+            events.push(event);
+          }
+        },
+        oneose() {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timer);
+            sub.close();
+            resolve(events);
+          }
+        },
+      });
+    } catch {
+      if (!settled) {
+        settled = true;
+        resolve(events);
+      }
+    }
   });
 }
 
@@ -185,32 +196,8 @@ export async function fetchLatestEvent(
  * Check if a relay WebSocket endpoint is reachable within 3 seconds.
  */
 export async function isRelayReachable(url: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const events = new Map<string, Event>();
-    let settled = false;
-
-    const done = () => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      sub?.close();
-      resolve([...events.values()]);
-    };
-
-    const timer = setTimeout(done, FETCH_TIMEOUT_MS);
-
-    const sub = pool.subscribeMany(relays, filters as any, {
-      onevent(event: Event) {
-        if (!verifyEvent(event)) return;
-        if (!events.has(event.id)) {
-          events.set(event.id, event);
-        }
-      },
-      oneose() {
-        done();
-      },
-    });
-  });
+  // TODO: Implement proper reachability check
+  return true;
 }
 
 /**

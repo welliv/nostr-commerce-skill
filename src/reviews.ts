@@ -296,13 +296,16 @@ export interface RatingSummary {
   distribution: Record<1 | 2 | 3 | 4 | 5, number>;
 }
 
-export function summarizeRatings(reviews: ParsedReview[]): RatingSummary {
+export function summarizeRatings(reviews: ParsedReview[] = []): RatingSummary {
+  if (!Array.isArray(reviews)) reviews = [];
+
   const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<1 | 2 | 3 | 4 | 5, number>;
   let total = 0;
   let verifiedCount = 0;
   let suspectCount = 0;
 
   for (const r of reviews) {
+    if (!r || typeof r.rating !== "number") continue;
     const rating = r.rating as 1 | 2 | 3 | 4 | 5;
     if (rating >= 1 && rating <= 5) {
       distribution[rating]++;

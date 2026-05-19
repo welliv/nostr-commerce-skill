@@ -192,7 +192,16 @@ if (
   process.env.ESCROW_STORE_ACKNOWLEDGED !== "true"
 ) {
   console.error(
+    "[nostr-commerce-skill] WARNING: EscrowStore is using an IN-MEMORY store in production.\n" +
+    "Escrow sessions WILL be lost on process restart. If the server restarts while funds\n" +
+    "are locked, you can no longer release holds → goods are delivered but payment is lost.\n\n" +
+    "To suppress this warning, set ESCROW_STORE_ACKNOWLEDGED=true in your environment\n" +
+    "AFTER you have connected a persistent database (e.g., Redis, Postgres) to replace\n" +
+    "the _sessions Map in escrow.ts."
+  );
+}
 
+const _sessions = new Map<string, EscrowSession>();
 export function storeEscrowSession(session: EscrowSession): void {
   _sessions.set(session.orderId, session);
 }

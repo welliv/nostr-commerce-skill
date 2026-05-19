@@ -357,7 +357,7 @@ Content: comment text
 Nest replies: ["e", parent_comment_id], ["p", parent_author]
 ```
 
-#### NIP-69 / Zap Split / Payment Forwarding
+#### NIP-57 + NIP-99 / Multi-merchant Cart & Zap Splits
 ```
 On the cart event or checkout request:
 tags: ["zap", seller1_pubkey, relay, weight1],
@@ -366,12 +366,11 @@ tags: ["zap", seller1_pubkey, relay, weight1],
 Client calculates proportional amounts before sending
 ```
 
-#### NIP-42 / Relay Auth (Platform Fees)
+#### NIP-57 Prisms / Platform Fees
 ```
-Client receives AUTH challenge from relay
-Signs kind 22242 event: tags [["relay", url], ["challenge", string]]
-Relay grants authenticated access
-Wrapped invoice: merchant invoice + platform fee, same payment hash
+Use payment prisms (NIP-57 splits) to route a portion of every payment to the platform
+Example: tags include platform pubkey with weight for the fee percentage
+Client pays full amount; split happens automatically at the wallet level
 ```
 
 #### NIP-98 / HTTP Auth

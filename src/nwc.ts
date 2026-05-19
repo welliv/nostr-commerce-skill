@@ -24,6 +24,15 @@ import type { InvoiceParams, InvoiceResult, PaymentResult } from "./types.js";
 // ─── Wallet Client ────────────────────────────────────────────────────────────
 
 export class NostrWalletConnect {
+  private async withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+      ),
+    ]);
+  }
+
   private client: nwc.NWCClient;  // BUG-04 FIX: nwc.NWCClient not NWCClient
   private connected = false;
 
@@ -127,8 +136,8 @@ export class NostrWalletConnect {
     this.assertConnected();
 
     const normalizedInvoice = invoice.toLowerCase();
-    if (
-      throw new Error(
+    const result = await this.client.payInvoice({ invoice: normalizedInvoice });
+
     return {
       preimage: result.preimage,
       paymentHash: result.payment_hash ?? "",

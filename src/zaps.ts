@@ -266,7 +266,7 @@ export function parseZapReceipt(receipt: NostrEvent): ParsedZap | null {
 
     const bolt11Tag = receipt.tags.find((t) => t[0] === "bolt11");
     const amountMsats = bolt11Tag?.[1]
-      ? parseInt(amountTag?.[1] || "0", 10) * 1000
+      ? parseInt(bolt11Tag[1] || "0", 10) * 1000
       : 0;
 
     const recipientTag = zapRequest.tags.find((t) => t[0] === "p");
@@ -373,7 +373,7 @@ export function buildPrism(
   if (splits.length < 2) {
     throw new Error(
       "buildPrism requires at least 2 recipients. " +
-        "For a single recipient, use a standard payment."
+      "For a single recipient, use a standard payment."
     );
   }
 

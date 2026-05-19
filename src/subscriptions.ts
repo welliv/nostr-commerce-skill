@@ -153,14 +153,10 @@ export async function publishSubscriptionPlan(
  * SECURITY: The buyerNwcUrl is extremely sensitive. It grants payment
  * authority up to the budget cap. Store it encrypted, never in plaintext.
  */
-export function createSubscription(params: {
-  planDTag: string;
-  buyerPubkey: string;
-  merchantPubkey: string;
-  buyerNwcUrl: string;
-  amountMsats: number;
-  frequency: SubscriptionFrequency;
-}): SubscriptionRecord {
+export function createSubscription(params: any = {}): SubscriptionRecord {
+  if (!params?.planDTag) throw new Error("planDTag is required.");
+  if (!params?.buyerPubkey) throw new Error("buyerPubkey is required.");
+  if (!params || typeof params !== "object") params = {};
   const id = `sub_${params.buyerPubkey.slice(0, 8)}_${params.planDTag}_${Date.now()}`;
   const now = Math.floor(Date.now() / 1000);
 

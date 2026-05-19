@@ -21,7 +21,7 @@
  * URL is absent, fall back to NIP-85 attestation-only based on preimage evidence.
  */
 
-import { finalizeEvent, verifyEvent } from "nostr-tools";
+import { finalizeEvent, verifyEvent, generateSecretKey } from "nostr-tools";
 import { publishToRelays, fetchEvents } from "./relays.js";
 import {
   type NostrEvent,
@@ -215,9 +215,22 @@ export async function fetchAssertionsForPayment(
  * Both buyer and merchant should publish their side to give arbitrators
  * the full picture before ruling.
  */
+
+/**
+ * Synchronous validation for dispute data.
+ * Throws immediately so callers can catch without awaiting.
+ */
+export function validateDisputeData(data: DisputeData): void {
+  if (!data?.orderId) throw new Error("orderId is required.");
+  if (!data.paymentHash || data.paymentHash.length !== 64) {
+    throw new Error("paymentHash must be a valid 64-char hex payment hash.");
+  }
+  if (!data.reason?.trim()) throw new Error("Dispute reason cannot be empty.");
+}
+
 export async function initiateDispute(
   data: DisputeData,
-  disputerKey: Uint8Array,
+  disputerKey?: Uint8Array,
   relays: string[] = DEFAULT_RELAYS
 ): Promise<PublishResult> {
   if (!data.orderId) throw new Error("orderId is required.");
@@ -225,6 +238,17 @@ export async function initiateDispute(
     throw new Error("paymentHash must be a valid 64-char hex payment hash.");
   }
   if (!data.reason.trim()) throw new Error("Dispute reason cannot be empty.");
+
+  if (!data.merchantPubkey || data.merchantPubkey.length !== 64) {
+    throw new Error("merchantPubkey must be a valid 64-char hex pubkey.");
+  }
+  if (!data.buyerPubkey || data.buyerPubkey.length !== 64) {
+    throw new Error("buyerPubkey must be a valid 64-char hex pubkey.");
+  }
+
+  if (!disputerKey || !(disputerKey instanceof Uint8Array) || disputerKey.length !== 32) {
+    throw new Error("disputerKey must be a valid 32-byte Uint8Array private key.");
+  }
 
   const tags: string[][] = [
     // Tag both parties so they're notified
@@ -238,11 +262,13 @@ export async function initiateDispute(
   ];
 
   // Link supporting evidence events
-  for (const evidenceId of data.evidenceEventIds) {
+  if (Array.isArray(data.evidenceEventIds)) {
+    for (const evidenceId of data.evidenceEventIds) {
     if (evidenceId.length === 64) {
       tags.push(["e", evidenceId, "", "evidence"]);
     }
   }
+}
 
   const event = finalizeEvent(
     {
