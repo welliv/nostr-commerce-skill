@@ -15,3 +15,9 @@ AGENT_INSTRUCTIONS.md
 # OS / editor
 .DS_Store
 *.log
+
+# Test environment
+.env.test
+
+# Audit / analysis docs
+docs/

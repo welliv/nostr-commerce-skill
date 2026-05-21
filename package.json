@@ -28,7 +28,8 @@
   "dependencies": {
     "@getalby/lightning-tools": "^5.0.0",
     "@getalby/sdk": "^3.6.0",
-    "nostr-tools": "^2.7.0"
+    "nostr-tools": "^2.7.0",
+    "@scure/base": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
