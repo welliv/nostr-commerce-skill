@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { nwc } from "@getalby/sdk";
+import { fibonacciSleep } from "./fibonacci.js";
 /**
  * escrow.ts - Lightning Escrow with NIP-40 Deadline (Scenario 8)
  *
@@ -365,15 +366,12 @@ export async function waitForPayment(
         return session;
       }
     } catch {
-      // Lookup failure is non-fatal - keep polling
+      // Lookup failure is non-fatal — keep polling
     }
 
-    // BLIND-06 FIX: Exponential backoff
-    const delay = Math.min(
-      initialIntervalMs * Math.pow(1.5, attempt),
-      maxIntervalMs
-    );
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    // Fibonacci backoff: 1s, 1s, 2s, 3s, 5s, 8s, 13s, 21s... (capped at maxIntervalMs)
+    // Gentler ramp-up than 1.5× exponential — avoids flooding NWC endpoints
+    await fibonacciSleep(attempt, maxIntervalMs);
     attempt++;
   }
 }

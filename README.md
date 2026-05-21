@@ -182,3 +182,12 @@ Then tell your agent: *"Add escrow to the checkout"* or *"Let buyers leave verif
 ---
 
 MIT License
+      // Lookup failure is non-fatal - keep polling
+    }
+
+    // Fibonacci backoff: 1s, 1s, 2s, 3s, 5s, 8s, 13s, 21s... (capped at maxIntervalMs)
+    // Gentler ramp-up than 1.5× exponential — avoids flooding NWC endpoints
+    await fibonacciSleep(attempt, maxIntervalMs);
+    attempt++;
+  }
+}

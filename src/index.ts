@@ -116,3 +116,23 @@ export {
   summarizeRatings,
   verifyPreimage,
 } from "./reviews.js";
+
+// Escrow (Scenario 8)
+export { NWCEscrowBackend, createEscrowWithNWC } from "./escrow.js";
+
+// Fibonacci utilities — backoff, trust scoring, prerequisite checking
+export {
+  fibonacciBackoff,
+  fibonacciSleep,
+  computeTrustScore,
+  checkPrerequisites,
+  buildPath,
+  TRUST_WEIGHTS,
+  MAX_TRUST_SCORE,
+  SCENARIO_PREREQUISITES,
+} from "./fibonacci.js";
+export type {
+  TrustSignals,
+  TrustScore,
+  ScenarioInfo,
+} from "./fibonacci.js";

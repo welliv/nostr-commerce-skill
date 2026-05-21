@@ -182,3 +182,12 @@ Nostr commerce replaces centralized control with cryptographic coordination:
 - **Trust is verifiable** — NIP-05 domain proofs, NIP-39 cross-platform links, NIP-85 assertions, and preimage-gated reviews.
 
 The result: a merchant who builds on Nostr owns their store, their reputation, and their payment rails. If any app or relay disappears, everything moves with them.
+      // Lookup failure is non-fatal - keep polling
+    }
+
+    // Fibonacci backoff: 1s, 1s, 2s, 3s, 5s, 8s, 13s, 21s... (capped at maxIntervalMs)
+    // Gentler ramp-up than 1.5× exponential — avoids flooding NWC endpoints
+    await fibonacciSleep(attempt, maxIntervalMs);
+    attempt++;
+  }
+}
