@@ -1,6 +1,6 @@
 {
   "name": "nostr-commerce-skill",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Agentic AI skill for Nostr commerce — all 22 scenarios, NIP-47/57/99/59/40/50/56/22/98 + Lightning L402",
   "type": "module",
   "main": "./dist/index.js",
@@ -41,6 +41,6 @@
     "ws": "^8.20.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

@@ -8,12 +8,13 @@ description: >
   07, 17, 19, 22, 40, 44, 47, 50, 56, 57, 59, 85, 98, 99 and L402. Use when
   the user mentions Nostr, NIP, Lightning wallet, NWC, zaps, marketplace,
   decentralized shop, or any of the 22 scenarios by name or concept.
+version: 2.0.1
+author: welliv
 license: MIT
-compatibility: Works with any JavaScript/TypeScript, Python, Rust, or Go codebase. Requires Node.js 18+ when using this library directly.
 metadata:
-  version: "2.0"
-  author: welliv
-  library: https://github.com/welliv/nostr-commerce-skill
+  hermes:
+    tags: [nostr, lightning, escrow, commerce, nip, marketplace, bitcoin]
+    related_skills: [commerce-skill-testing, hermes-agent-skill-authoring]
 ---
 
 # Nostr Commerce Skill
@@ -182,12 +183,3 @@ Nostr commerce replaces centralized control with cryptographic coordination:
 - **Trust is verifiable** — NIP-05 domain proofs, NIP-39 cross-platform links, NIP-85 assertions, and preimage-gated reviews.
 
 The result: a merchant who builds on Nostr owns their store, their reputation, and their payment rails. If any app or relay disappears, everything moves with them.
-      // Lookup failure is non-fatal - keep polling
-    }
-
-    // Fibonacci backoff: 1s, 1s, 2s, 3s, 5s, 8s, 13s, 21s... (capped at maxIntervalMs)
-    // Gentler ramp-up than 1.5× exponential — avoids flooding NWC endpoints
-    await fibonacciSleep(attempt, maxIntervalMs);
-    attempt++;
-  }
-}

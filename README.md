@@ -155,7 +155,7 @@ ESCROW_STORE_ACKNOWLEDGED=false                 # set true after connecting pers
 
 ```bash
 npm install && npm run typecheck && npm test
-# 22 test files · 220 tests · 0 failures
+# 23 test files · 253 tests · 0 failures
 
 # Live wallet integration tests (requires Alby Hub):
 INTEGRATION_TESTS=true NWC_URL_1=nostr+walletconnect://... npm test
@@ -182,12 +182,3 @@ Then tell your agent: *"Add escrow to the checkout"* or *"Let buyers leave verif
 ---
 
 MIT License
-      // Lookup failure is non-fatal - keep polling
-    }
-
-    // Fibonacci backoff: 1s, 1s, 2s, 3s, 5s, 8s, 13s, 21s... (capped at maxIntervalMs)
-    // Gentler ramp-up than 1.5× exponential — avoids flooding NWC endpoints
-    await fibonacciSleep(attempt, maxIntervalMs);
-    attempt++;
-  }
-}
