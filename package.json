@@ -28,8 +28,8 @@
   "dependencies": {
     "@getalby/lightning-tools": "^5.0.0",
     "@getalby/sdk": "^3.6.0",
-    "nostr-tools": "^2.7.0",
-    "@scure/base": "^1.2.0"
+    "@scure/base": "^1.2.0",
+    "nostr-tools": "^2.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -37,7 +37,8 @@
     "dotenv": "^17.4.2",
     "tsx": "^4.22.1",
     "typescript": "^5.4.0",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "ws": "^8.20.1"
   },
   "engines": {
     "node": ">=18.0.0"
