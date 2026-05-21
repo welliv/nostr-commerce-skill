@@ -15,9 +15,9 @@
  *   4. The subscription state is a Nostr event (kind 30402 variant) that
  *      the app publishes to relays - visible, auditable, cancellable.
  *
- * Key insight: The NWC budget cap IS the subscription authorization.
+ * Key insight: The NWC budget cap IS the subscription authorisation.
  * No Stripe, no billing portal, no hidden charges. The buyer can see
- * exactly what is authorized in their wallet and revoke it instantly.
+ * exactly what is authorised in their wallet and revoke it instantly.
  *
  * IMPORTANT LIMITATION:
  *   NWC does not have a "charge on schedule" primitive. The app must

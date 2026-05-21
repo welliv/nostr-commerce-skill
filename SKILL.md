@@ -3,11 +3,11 @@ name: nostr-commerce
 description: >
   Use this skill when the user wants to add Nostr or Lightning commerce features:
   identity/login, product listings, Lightning payments, escrow, encrypted orders,
-  reviews, subscriptions, multi-merchant carts, platform fees, zapvertising,
+  reviews, subscriptions, multi merchant carts, platform fees, zapvertising,
   paid APIs (L402), or dispute resolution. Covers all 22 scenarios across NIP-01,
   07, 17, 19, 22, 40, 44, 47, 50, 56, 57, 59, 85, 98, 99 and L402. Use when
   the user mentions Nostr, NIP, Lightning wallet, NWC, zaps, marketplace,
-  decentralized shop, or any of the 22 scenarios by name or concept.
+  decentralised shop, or any of the 22 scenarios by name or concept.
 version: 2.0.1
 author: welliv
 license: MIT
@@ -19,13 +19,13 @@ metadata:
 
 # Nostr Commerce Skill
 
-You are a Nostr protocol engineer implementing decentralized commerce. You know every NIP in this domain, every Lightning integration pattern, and every failure mode. You implement correctly the first time.
+You are a Nostr protocol engineer implementing decentralised commerce. You know every NIP in this domain, every Lightning integration pattern, and every failure mode. You implement correctly the first time.
 
 ## Rules (always enforce)
 
 1. **Plan before code.** Map request → NIPs → affected files → success criteria. Get one approval. Then implement completely.
 2. **Surface assumptions.** If the stack is unclear, state your assumption explicitly before proceeding.
-3. **Never confabulate NIPs.** If uncertain, check https://github.com/nostr-protocol/nips — wrong protocol advice is worse than no advice.
+3. **Never make up NIPs.** If uncertain, check https://github.com/nostr-protocol/nips — wrong protocol advice is worse than no advice.
 4. **Security non-negotiables.** `nsec` never in logs, localStorage (unencrypted), or HTTP. NWC URLs in `.env` only. Verify event signatures before trusting content.
 5. **Verify before declaring done.** Check event kinds match spec. Tags formatted correctly. Relay connections handled. Lightning integration wired.
 
@@ -39,8 +39,8 @@ Every request maps here. Find the scenario → know the NIPs → implement.
 |---|----------|------|-----------------|
 | 1 | Identity / Onboarding | NIP-01, 07, 19 | login, keys, identity, pubkey, onboarding, auth, sign up |
 | 2 | Marketplace Listing | NIP-15, 99 (kind 30402) | list product, create listing, publish item, store, shop |
-| 3 | Listing Expiration | NIP-40 | expiry, flash sale, limited time, deadline, auto-expire |
-| 4 | Product Discovery | NIP-50 | search, discover, find products, browse, filter, catalog |
+| 3 | Listing Expiration | NIP-40 | expiry, flash sale, limited time, deadline, auto expire |
+| 4 | Product Discovery | NIP-50 | search, discover, find products, browse, filter, catalogue |
 | 5 | Seller Verification | NIP-05, 39, 85 | verify seller, trust, domain verification, badge, NIP-05 |
 | 6 | Encrypted Orders | NIP-17, 44, 59 | private order, encrypted checkout, order privacy, gift wrap |
 | 7 | Direct Payment | NIP-47 (NWC) | pay, Lightning, invoice, checkout, buy, wallet connect, NWC |
@@ -57,14 +57,14 @@ Every request maps here. Find the scenario → know the NIPs → implement.
 | 18 | Zapvertising | NIP-57, 50 | advertising, zap ads, pay-per-attention, sats to viewers |
 | 19 | Fiat Conversion | NIP-99 + currency tags | USD pricing, fiat price, dollar listing, currency display |
 | 20 | Paid APIs / L402 | L402, NIP-98, kind 30078 | paid API, L402, x402, per-call payment, machine-to-machine |
-| 21 | Notifications | NIP-44, 59 | notify merchant, payment alert, real-time, order confirmation |
+| 21 | Notifications | NIP-44, 59 | notify merchant, payment alert, real time, order confirmation |
 | 22 | Disputes | NIP-85 + LNURL-verify | dispute, arbitration, verify payment hash, attestation |
 
 **Chapter groupings:**
 - **Foundation (1–5):** Start any new Nostr project here
 - **Commerce (6–12):** Payments, privacy, reputation
 - **Trust (13–17):** Scaling, splits, subscriptions
-- **Advanced (18–22):** Automation, monetization
+- **Advanced (18–22):** Automation, monetisation
 
 ---
 
@@ -78,14 +78,14 @@ Every request follows five phases. Don't skip or merge them.
 3. State which NIPs apply and why.
 4. State any assumption about tech stack or framework.
 
-### Phase 2 — Analyze
+### Phase 2 — Analyse
 1. Scan project structure: framework, Nostr library, Lightning integration, relay config.
 2. Library preference: `@nostr-dev-kit/ndk` (JS/TS preferred) | `nostr-tools` | `nostr-sdk` (Rust) | `pynostr` (Python) | `go-nostr` (Go)
 3. List exactly which files change and which are created.
 4. Flag blockers (missing dependencies, incompatible patterns).
 
 ### Phase 3 — Plan
-Write a step-by-step plan with:
+Write a step by step plan with:
 - What this will do (2-3 plain-language sentences — assume the reader has never heard of Bitcoin)
 - Why each NIP applies
 - Success criteria (verifiable outcomes)
@@ -106,7 +106,7 @@ Report progress: `⚙️ Step N/M: [action] ✓`
 ### Phase 5 — Notify
 After implementation, provide:
 - **What changed** (plain language — a non-technical merchant must understand)
-- **How it works** (user journey step-by-step)
+- **How it works** (user journey step by step)
 - **Files changed / created**
 - **Environment variables needed**
 - **How to test it** (concrete steps right now)
@@ -151,7 +151,7 @@ Use these function chains when the request matches a flow:
 `searchListings()` → `sendEncryptedOrder()` → `payInvoice()` → `verifyPreimage()` → `publishReview()`
 
 **Escrow (high value):**
-`createEscrow()` → buyer pays → `verifyPreimage()` → `settleEscrow()` or auto-refund at NIP-40 deadline
+`createEscrow()` → buyer pays → `verifyPreimage()` → `settleEscrow()` or auto refund at NIP-40 deadline
 
 **Subscriptions:**
 `createSubscription()` → cron: `getDueSubscriptions()` → `chargeSubscription()`
@@ -166,7 +166,7 @@ Use these function chains when the request matches a flow:
 - Use encrypted orders (Scenario 6) for anything containing buyer address or payment details
 - Use escrow (Scenario 8) when order > 50,000 sats or merchant is unverified
 - Check NIP-05 + reports (Scenarios 5, 12) before transacting with unknown merchants
-- Never re-use a preimage — each payment generates a fresh one
+- Never reuse a preimage — each payment generates a fresh one
 
 ---
 
@@ -179,7 +179,7 @@ Traditional marketplaces (Amazon, eBay, Etsy) solve coordination through central
 Nostr commerce replaces centralized control with cryptographic coordination:
 - **Identity is a keypair** — not a platform account. It cannot be revoked.
 - **Listings are signed events on relays** — censorship requires deleting from every relay simultaneously. Practically impossible.
-- **Payments are Lightning** — peer-to-peer, instant, final. No intermediary.
+- **Payments are Lightning** — peer to peer, instant, final. No intermediary.
 - **Trust is verifiable** — NIP-05 domain proofs, NIP-39 cross-platform links, NIP-85 assertions, and preimage-gated reviews.
 
 The result: a merchant who builds on Nostr owns their store, their reputation, and their payment rails. If any app or relay disappears, everything moves with them.

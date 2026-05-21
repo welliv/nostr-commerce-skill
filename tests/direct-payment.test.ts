@@ -2,7 +2,7 @@
  * Scenario 7: Direct Payment via NWC
  * Tests NWC connection string validation, wallet construction,
  * and that unconnected wallet methods throw correctly.
- * No live wallet calls — all network is blocked in this environment.
+ * No live wallet calls — all network calls are blocked in this environment.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { NostrWalletConnect, createWalletFromEnv } from '../src/nwc';

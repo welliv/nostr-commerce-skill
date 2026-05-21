@@ -1,10 +1,10 @@
 /**
- * fibonacci.ts — Fibonacci-Aware Commerce Utilities
+ * fibonacci.ts — Fibonacci-aware commerce utilities
  *
  * Three implementations derived from the Fibonacci structure of the 22 scenarios:
  *
  * 1. fibonacciBackoff()     — Retry delays following the Fibonacci sequence.
- *                             Gentler ramp-up than exponential (1.5×). Better
+ *                             Gentler ramp up than exponential (1.5×). Better
  *                             for Lightning relay pressure and wallet rate limits.
  *
  * 2. computeTrustScore()    — Trust signals weighted by Fibonacci values.
@@ -72,7 +72,7 @@ export interface TrustSignals {
   nip05Verified: boolean;
   /** NIP-39: at least one linked external identity (GitHub, Twitter, etc.). Weight: 1 */
   hasExternalLinks: boolean;
-  /** NIP-85: at least one trusted third-party assertion for this pubkey. Weight: 2 */
+  /** NIP-85: at least one trusted third party assertion for this pubkey. Weight: 2 */
   hasThirdPartyAssertions: boolean;
   /** Kind 31990: at least one review verified by a real payment preimage. Weight: 3 */
   hasVerifiedReviews: boolean;
@@ -98,7 +98,7 @@ export const TRUST_WEIGHTS = {
   hasThirdPartyAssertions:2,  // F(3): someone trusted vouched for you
   hasVerifiedReviews:     3,  // F(4): real buyers with payment preimages
   hasReceivedZaps:        5,  // F(5): community spent real sats to endorse
-  hasCleanReportHistory:  8,  // F(6): sustained trustworthy behavior
+  hasCleanReportHistory:  8,  // F(6): sustained trustworthy behaviour
 } as const;
 
 export const MAX_TRUST_SCORE = Object.values(TRUST_WEIGHTS).reduce((a, b) => a + b, 0); // 20
@@ -113,10 +113,10 @@ export interface TrustScore {
 }
 
 /**
- * Compute a Fibonacci-weighted trust score (0–20) for a merchant.
+ * Compute a Fibonacci weighted trust score (0–20) for a merchant.
  *
  * The tiers map to actionable UX decisions:
- *   unknown   (0–1):   No trust signals. Show warning.
+ *   unknown   (0–1):   No trust signals. Show a warning.
  *   low       (2–5):   Basic identity only. Suggest escrow.
  *   moderate  (6–10):  Some verification. Reasonable for small orders.
  *   high     (11–17):  Strong multi-signal trust. Safe for most orders.
@@ -149,7 +149,7 @@ export function computeTrustScore(signals: TrustSignals): TrustScore {
   const entries: [keyof TrustSignals, keyof typeof TRUST_WEIGHTS, string][] = [
     ["nip05Verified",           "nip05Verified",           "NIP-05 domain verification"],
     ["hasExternalLinks",        "hasExternalLinks",        "NIP-39 external identity links"],
-    ["hasThirdPartyAssertions", "hasThirdPartyAssertions", "NIP-85 third-party assertions"],
+    ["hasThirdPartyAssertions", "hasThirdPartyAssertions", "NIP-85 third party assertions"],
     ["hasVerifiedReviews",      "hasVerifiedReviews",      "Preimage-verified reviews"],
     ["hasReceivedZaps",         "hasReceivedZaps",         "Zap endorsements (NIP-57)"],
     ["hasCleanReportHistory",   "hasCleanReportHistory",   "Clean report history (NIP-56)"],
@@ -190,7 +190,7 @@ export interface ScenarioInfo {
  * Formal prerequisite map for all 22 scenarios.
  *
  * The dependency graph has 5 layers — each layer is the sum of
- * the two preceding (Fibonacci-like structure):
+ * the two preceding (Fibonacci like structure):
  *
  *   Layer 0: 1 scenario  (Identity — the root)
  *   Layer 1: 5 scenarios (build on identity)
@@ -220,7 +220,7 @@ export const SCENARIO_PREREQUISITES: Record<number, ScenarioInfo> = {
   13: { name: "Zaps",               requires: [7],       layer: 2, riskIfMissing: "loud" },
   14: { name: "Payment Prisms",     requires: [13],      layer: 3, riskIfMissing: "silent" },
   15: { name: "Subscriptions",      requires: [7],       layer: 2, riskIfMissing: "loud" },
-  16: { name: "Multi-merchant Cart",requires: [7, 2],    layer: 2, riskIfMissing: "loud" },
+  16: { name: "multi merchant Cart",requires: [7, 2],    layer: 2, riskIfMissing: "loud" },
   17: { name: "Platform Fees",      requires: [14],      layer: 4, riskIfMissing: "silent" },
   18: { name: "Zapvertising",       requires: [13, 4],   layer: 3, riskIfMissing: "silent" },
   19: { name: "Fiat Conversion",    requires: [2],       layer: 2, riskIfMissing: "silent" },

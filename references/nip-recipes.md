@@ -49,7 +49,7 @@ Fallback: client-side filter on event.content + tags if relay lacks NIP-50
 ## NIP-05 / DNS Verification
 ```
 Profile kind 0: {"nip05": "user@domain.com"}
-Verify: GET https://domain.com/.well-known/nostr.json?name=user
+Verify: GET https://domain.com/.well known/nostr.json?name=user
 Pass: response.names["user"] === pubkey
 ```
 
@@ -134,7 +134,7 @@ Question: tags: ["K", "30402"], ["E", listing_event_id, relay, listing_author_pu
 Answer:   tags: ["e", question_event_id, relay, "reply"]
 ```
 
-## NIP-57 Splits / Multi-merchant Cart
+## NIP-57 Splits / multi merchant Cart
 ```
 On checkout event: ["zap", seller1_pubkey, relay, weight1],
                    ["zap", seller2_pubkey, relay, weight2]
@@ -175,7 +175,7 @@ Always publish to 3+ relays. Use filterReachableRelays() before critical operati
 
 ## Common Errors
 ```
-Event signature invalid  → wrong private key or corrupted event — re-sign
+Event signature invalid  → wrong private key or corrupted event — resign
 Relay refused: pow       → relay requires proof-of-work — switch relay
 Invoice expired          → Lightning invoice > 10 min — generate new one
 NIP-07 not found         → no browser extension — prompt to install Alby/nos2x

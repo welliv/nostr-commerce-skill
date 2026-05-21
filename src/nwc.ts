@@ -128,7 +128,7 @@ export class NostrWalletConnect {
    * Returns the preimage - your cryptographic proof of payment.
    * STORE THIS. It is required for:
    *   - Scenario 9: Proof of Payment (NIP-85 attestation)
-   *   - Scenario 10: Preimage-gated reviews (kind 31990)
+   *   - Scenario 10: preimage-gated reviews (kind 31990)
    *
    * The preimage is only returned once. If you lose it, you cannot prove payment.
    */

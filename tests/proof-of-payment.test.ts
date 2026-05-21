@@ -1,5 +1,5 @@
 /**
- * Scenarios 9 & 10: Proof of Payment + Preimage-Gated Reviews
+ * Scenarios 9 & 10: Proof of Payment + preimage-Gated Reviews
  * verifyPreimage: SHA-256(preimage) must equal the paymentHash.
  * Only buyers who paid can leave a review — the preimage proves payment.
  */

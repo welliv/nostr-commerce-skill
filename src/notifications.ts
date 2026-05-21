@@ -1,5 +1,5 @@
 /**
- * notifications.ts - Real-Time Payment Notifications (Scenario 21)
+ * notifications.ts - real time Payment Notifications (Scenario 21)
  *
  * NIPs: NIP-44 (encryption), NIP-59 (gift-wrap), kind 1059
  * Lightning: NWC subscribeNotifications (replaces all polling)
@@ -46,10 +46,10 @@ export interface NotificationSession {
   isActive: boolean;
 }
 
-// ─── Layer 1: NWC Real-Time Subscription ──────────────────────────────────────
+// ─── Layer 1: NWC real time Subscription ──────────────────────────────────────
 
 /**
- * Subscribe to real-time payment notifications from a wallet.
+ * Subscribe to real time payment notifications from a wallet.
  *
  * This is the primary notification mechanism for merchants.
  * Call this once on server startup - it stays open indefinitely.
@@ -148,7 +148,7 @@ export async function sendBuyerPaymentConfirmation(
     message: alert.message ?? "Payment confirmed! Thank you for your order.",
   };
 
-  // Reuse the gift-wrap infrastructure from orders.ts
+  // reuse the gift-wrap infrastructure from orders.ts
   // PaymentRequest type 1 carries the confirmation
   await sendPaymentRequest(
     {

@@ -53,18 +53,18 @@ describe('Scenario 20: L402 Paid APIs', () => {
   describe('buildNip98AuthHeader', () => {
     it('returns a string starting with "Nostr "', () => {
       const sk = generateSecretKey();
-      const header = buildNip98AuthHeader('https://api.example.com/catalog', 'GET', sk);
+      const header = buildNip98AuthHeader('https://api.example.com/catalogue', 'GET', sk);
       expect(header).toMatch(/^Nostr /);
     });
 
     it('base64 payload decodes to a valid Nostr event JSON', () => {
       const sk = generateSecretKey();
-      const header = buildNip98AuthHeader('https://api.example.com/catalog', 'GET', sk);
+      const header = buildNip98AuthHeader('https://api.example.com/catalogue', 'GET', sk);
       const b64 = header.replace('Nostr ', '');
       const event = JSON.parse(atob(b64));
       expect(event.kind).toBe(27235);
       expect(event.tags).toEqual(expect.arrayContaining([
-        expect.arrayContaining(['u', 'https://api.example.com/catalog']),
+        expect.arrayContaining(['u', 'https://api.example.com/catalogue']),
         expect.arrayContaining(['method', 'GET']),
       ]));
     });

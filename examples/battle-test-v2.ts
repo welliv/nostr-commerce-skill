@@ -62,7 +62,7 @@ async function main() {
     if (result.successCount === 0) throw new Error("Listing failed");
   });
 
-  await runTest("CART-01: build multi-merchant cart", async () => {
+  await runTest("CART-01: build multi merchant cart", async () => {
     const cart = buildCart(identity.pubkey, [
       {
         listingEventId: "a".repeat(64),

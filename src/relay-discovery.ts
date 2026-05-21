@@ -127,7 +127,7 @@ export async function buildRelaySetForUsers(
 /**
  * Get the best relays to use for sending a message to a specific user.
  *
- * Protocol-correct behavior:
+ * Protocol-correct behaviour:
  *   "To send an event to user X, publish to X's WRITE relays"
  *   (their write relays are where their clients read from)
  *
@@ -146,7 +146,7 @@ export async function getRelaysForUser(
 /**
  * Get the best relays to use for fetching events FROM a specific user.
  *
- * Protocol-correct behavior:
+ * Protocol-correct behaviour:
  *   "To read events from user X, query X's READ relays"
  *
  * @example

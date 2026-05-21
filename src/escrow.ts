@@ -415,7 +415,7 @@ export async function releaseEscrow(
     );
   }
 
-  // Check deadline - hold invoices auto-expire, cannot release after deadline
+  // Check deadline - hold invoices auto expire, cannot release after deadline
   const now = Math.floor(Date.now() / 1000);
   if (now > session.expiresAt) {
     session.status = "expired";
@@ -438,7 +438,7 @@ export async function releaseEscrow(
 
 /**
  * Cancel the hold invoice and refund the buyer.
- * Use this if the merchant cannot fulfill the order.
+ * Use this if the merchant cannot fulfil the order.
  *
  * @param orderId - The order to refund
  * @param backend - Your Lightning node backend

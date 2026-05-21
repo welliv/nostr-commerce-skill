@@ -1,8 +1,8 @@
 # nostr-commerce-skill
 
-TypeScript library implementing all 22 Nostr commerce scenarios — identity, listings, Lightning payments, escrow, reviews, subscriptions, multi-merchant carts, and dispute resolution.
+TypeScript library implementing all 22 Nostr commerce scenarios — identity, listings, Lightning payments, escrow, reviews, subscriptions, multi merchant carts, and dispute resolution.
 
-Also works as an AI skill for Claude Code, Cursor, and Gemini CLI: give the agent a plain-English instruction and it maps it to the right NIPs, analyzes your codebase, and implements it.
+Also works as an AI skill for Claude Code, Cursor, and Gemini CLI: give the agent a plain-English instruction and it maps it to the right NIPs, analyses your codebase, and implements it.
 
 ```bash
 npm install nostr-commerce-skill
@@ -15,7 +15,7 @@ Nostr commerce spans 22 NIPs. Listings, payments, escrow, reviews, and reputatio
 
 Traditional marketplaces (Amazon, eBay) own everything — your account, your reviews, your reputation. If they ban you or shut down, it's gone.
 
-On Nostr, your identity is a keypair, your listings are signed events on relays, and your payments run peer-to-peer over Lightning. No platform controls any of it.
+On Nostr, your identity is a keypair, your listings are signed events on relays, and your payments run peer to peer over Lightning. No platform controls any of it.
 
 ---
 
@@ -29,7 +29,7 @@ On Nostr, your identity is a keypair, your listings are signed events on relays,
 | 2 | Listings | Products as signed events. Only you can update or delete them. | NIP-99, 15 |
 | 3 | Expiration | Auto-expire listings at a timestamp — enforced at relay level, not a cron job. | NIP-40 |
 | 4 | Discovery | Full-text search across relays. No algorithm, no sponsored results. | NIP-50 |
-| 5 | Verification | Multi-signal trust: DNS (NIP-05), social accounts (NIP-39), third-party assertions (NIP-85). | NIP-05, 39, 85 |
+| 5 | Verification | Multi-signal trust: DNS (NIP-05), social accounts (NIP-39), third party assertions (NIP-85). | NIP-05, 39, 85 |
 
 ### Commerce
 
@@ -58,7 +58,7 @@ On Nostr, your identity is a keypair, your listings are signed events on relays,
 | # | Scenario | What it does | NIPs |
 |---|----------|--------------|------|
 | 18 | Zapvertising | Pay viewers directly to see your ad. Viewers receive real sats. | NIP-57, 50 |
-| 19 | Fiat Conversion | List in USD/EUR, pay in sats at real-time CoinGecko rate. | NIP-99 |
+| 19 | Fiat Conversion | List in USD/EUR, pay in sats at real time CoinGecko rate. | NIP-99 |
 | 20 | Paid APIs (L402) | Per-call Lightning payments. AI agents can buy data autonomously. | L402, NIP-98 |
 | 21 | Notifications | Encrypted order confirmations via relays. No email, no webhooks. | NIP-44, 59 |
 | 22 | Disputes | Cryptographic dispute resolution without seeing either wallet. | NIP-85, LNURL |

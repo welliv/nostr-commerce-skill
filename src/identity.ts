@@ -163,7 +163,7 @@ export async function signWithNip07(
 /**
  * Verify a NIP-05 identifier against a pubkey.
  *
- * Fetches https://domain.com/.well-known/nostr.json?name=<username>
+ * Fetches https://domain.com/.well known/nostr.json?name=<username>
  * and checks that names[username] === pubkey.
  *
  * @example verifyNip05("alice@shopstr.store", "abc123pubkeyhex...")
@@ -176,7 +176,7 @@ export async function verifyNip05(
   if (!name || !domain) return false;
 
   try {
-    const url = `https://${domain}/.well-known/nostr.json?name=${encodeURIComponent(name)}`;
+    const url = `https://${domain}/.well known/nostr.json?name=${encodeURIComponent(name)}`;
     const res = await fetch(url, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(5_000),
@@ -195,7 +195,7 @@ export async function verifyNip05(
  * Perform full identity verification for a pubkey:
  *   NIP-05  - DNS domain verification
  *   NIP-39  - external identity links (GitHub, Twitter, etc.)
- *   NIP-85  - third-party trust attestations
+ *   NIP-85  - third party trust attestations
  *
  * Returns a structured result the UI can use to display trust signals.
  */
@@ -236,7 +236,7 @@ export async function verifyIdentity(
     }
   }
 
-  // NIP-85: trusted third-party attestations for this pubkey
+  // NIP-85: trusted third party attestations for this pubkey
   const attestations = await fetchEvents(
     [{ kinds: [KIND.TRUSTED_ASSERTION], "#d": [pubkey], limit: 20 }],
     relays

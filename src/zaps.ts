@@ -58,7 +58,7 @@ export async function resolveLnurlFromProfile(
     const [name, domain] = lud16.split("@");
     if (!name || !domain) return null;
 
-    return `https://${domain}/.well-known/lnurlp/${encodeURIComponent(name)}`;
+    return `https://${domain}/.well known/lnurlp/${encodeURIComponent(name)}`;
   } catch {
     return null;
   }

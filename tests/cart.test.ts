@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildCart, summarizeCart } from '../src/cart';
 
-describe('Multi-merchant Cart (Battle Tests)', () => {
+describe('multi merchant Cart (Battle Tests)', () => {
   it('should build a cart', () => {
     const cart = buildCart('npub1buyer', [
       { merchantPubkey: 'npub1m1', listingEventId: 'evt1', amountMsats: 10000, quantity: 1 },

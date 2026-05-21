@@ -23,7 +23,7 @@ Expected: **23 test files · 253 tests · 0 failures**
 | `references/nip-recipes.md` | 185 | NIP recipe reference |
 | `references/framework-patterns.md` | 82 | Framework implementation patterns |
 | `.github/workflows/ci.yml` | — | CI/CD pipeline |
-| `LICENSE` | — | MIT license |
+| `LICENSE` | — | MIT licence |
 
 ## Files Modified
 

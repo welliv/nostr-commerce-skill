@@ -65,7 +65,7 @@ export interface ApiEndpoint {
 // ─── NIP-98 HTTP Auth ─────────────────────────────────────────────────────────
 
 /**
- * Build a NIP-98 signed authorization event.
+ * Build a NIP-98 signed authorisation event.
  * Include in request headers as: Authorization: Nostr <base64(JSON)>
  *
  * This proves the request comes from a specific Nostr pubkey.
@@ -148,7 +148,7 @@ export function parseL402Challenge(wwwAuthenticate: string): L402Challenge {
  *
  * @example
  *   const response = await fetchWithL402(
- *     "https://api.example.com/catalog",
+ *     "https://api.example.com/catalogue",
  *     { method: "GET" },
  *     wallet,
  *     userPrivkey  // for NIP-98 auth (optional)
@@ -202,9 +202,9 @@ export async function fetchWithL402(
  *
  * @example
  *   await publishApiEndpoint(
- *     { id: "product-catalog-v1", name: "Product Catalog API",
+ *     { id: "product-catalogue-v1", name: "Product Catalog API",
  *       description: "Fetch product listings with images",
- *       url: "https://api.mystore.com/catalog",
+ *       url: "https://api.mystore.com/catalogue",
  *       pricePerCallMsats: 1000, methods: ["GET"] },
  *     merchantPrivkey
  *   );
@@ -302,7 +302,7 @@ function parseApiEndpointEvent(event: NostrEvent): ApiEndpoint | null {
  *
  * @example (Express.js middleware)
  *   app.use("/api/paid-endpoint", async (req, res, next) => {
- *     const authHeader = req.headers.authorization;
+ *     const authHeader = req.headers.authorisation;
  *     if (authHeader?.startsWith("L402")) {
  *       const valid = await verifyL402Credentials(authHeader, wallet);
  *       if (valid) return next();

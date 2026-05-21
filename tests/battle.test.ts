@@ -15,7 +15,7 @@ import {
 
 describe('BATTLE TESTS — Serious Commerce Stress Suite', () => {
 
-  // ─── Cryptographic Stress ──────────────────────────────────────────
+  // ─── Cryptography & Keys ────────────────────────────────────────────
   describe('Cryptography & Keys', () => {
     it('rejects every invalid nsec variant', () => {
       const badNsecs = [
@@ -96,7 +96,7 @@ describe('BATTLE TESTS — Serious Commerce Stress Suite', () => {
   });
 
   // ─── Cart Stress ───────────────────────────────────────────────────
-  describe('Multi-Merchant Carts (Complex Checkout)', () => {
+  describe('multi merchant Carts (Complex Checkout)', () => {
     it('handles massive carts without crashing', () => {
       const items = Array.from({ length: 1000 }, (_, i) => ({
         listingEventId: 'e'.repeat(64),
@@ -186,7 +186,7 @@ describe('BATTLE TESTS — Serious Commerce Stress Suite', () => {
     });
   });
 
-  // ─── EXTREME CASES ─────────────────────────────────────────────────
+  // ─── Edge Cases ─────────────────────────────────────────────────────
   describe('EXTREME CASES — Push to Breaking Point', () => {
 
     it('rejects pubkeys that are too short or too long', () => {
@@ -374,7 +374,7 @@ describe('BATTLE TESTS — Serious Commerce Stress Suite', () => {
       timestamps.forEach(ts => {
         const listing = buildListingTemplate({
           dTag: `ts-${ts}`,
-          title: 'Timestamp Test',
+          title: 'timestamp Test',
           price: { amount: '100', currency: 'sats' },
         });
         expect(listing).toBeDefined();

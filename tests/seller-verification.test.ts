@@ -24,7 +24,7 @@ describe('Scenario 5: Seller Verification', () => {
       mockFetch.mockResolvedValueOnce(nip05Response(VALID_PUBKEY));
       expect(await verifyNip05('alice@example.com', VALID_PUBKEY)).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('.well-known/nostr.json'),
+        expect.stringContaining('.well known/nostr.json'),
         expect.any(Object)
       );
     });
@@ -61,7 +61,7 @@ describe('Scenario 5: Seller Verification', () => {
       expect(await verifyNip05('', VALID_PUBKEY)).toBe(false);
     });
 
-    it('uses correct well-known URL format', async () => {
+    it('uses correct well known URL format', async () => {
       mockFetch.mockResolvedValueOnce(nip05Response(VALID_PUBKEY));
       await verifyNip05('alice@shopstr.store', VALID_PUBKEY);
       const calledUrl = mockFetch.mock.calls[0][0] as string;

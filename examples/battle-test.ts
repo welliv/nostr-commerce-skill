@@ -107,7 +107,7 @@ async function main() {
 
   // LNURL / Zaps
   await runTest("ZAP-01: fetch LNURL metadata from Alby", async () => {
-    const meta = await fetchLnurlMetadata("https://getalby.com/.well-known/lnurlp/hello");
+    const meta = await fetchLnurlMetadata("https://getalby.com/.well known/lnurlp/hello");
     if (!meta) throw new Error("Failed to fetch LNURL metadata");
     console.log(`    allowsNostr: ${meta.allowsNostr}`);
   });

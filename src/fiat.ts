@@ -8,15 +8,15 @@
  * The listing stores the price in fiat. The client converts at display time.
  * The protocol doesn't care - it's a frontend concern, not a NIP concern.
  *
- * This unlocks non-Bitcoin-native merchants. A candle maker can list
+ * This unlocks non-Bitcoin native merchants. A candle maker can list
  * at $25 and never know what a satoshi is. The conversion is transparent,
- * client-controlled, and uses no platform-controlled exchange rate.
+ * client controlled, and uses no platform controlled exchange rate.
  *
  * Uses @getalby/lightning-tools for conversion - their library calls
  * the Alby API which aggregates multiple exchange rate sources.
  *
  * IMPORTANT: Exchange rates change. Always fetch fresh rates before
- * displaying to users or creating invoices. Never cache > 5 minutes.
+ * displaying to users or creating invoices. Never cache longer than 5 minutes.
  */
 
 
@@ -33,7 +33,7 @@ export interface ConversionResult {
   fetchedAt: number;    // unix timestamp - refresh if > 5 min old
 }
 
-// ─── Rate Cache (5-minute TTL) ────────────────────────────────────────────────
+// ─── Rate Cache (5 minute TTL) ────────────────────────────────────────────────
 
 const _rateCache = new Map<FiatCurrency, { rate: number; fetchedAt: number }>();
 const RATE_TTL_SECONDS = 300; // 5 minutes

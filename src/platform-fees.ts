@@ -92,11 +92,11 @@ export function calculateFee(
   };
 }
 
-// ─── Prism-Based Fee Wrapping (Non-Custodial) ─────────────────────────────────
+// ─── Prism-Based Fee Wrapping (non custodial) ─────────────────────────────────
 
 /**
  * Create a wrapped invoice using LNURL prism splitting.
- * This is the non-custodial path - platform never holds funds.
+ * This is the non custodial path - platform never holds funds.
  *
  * Requires merchant to have a Lightning address in their profile.
  * Check with resolveLnurlFromProfile() before calling this.

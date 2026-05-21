@@ -1,5 +1,5 @@
 /**
- * reviews.ts - Preimage-Gated Reviews (Scenario 10)
+ * reviews.ts - preimage-Gated Reviews (Scenario 10)
  *
  * AUDIT FIXES APPLIED:
  *   BUG-08: Reviews now bind the preimage to a specific listing + paymentHash.
@@ -10,7 +10,7 @@
  *             • Verification checks SHA256(preimage) === paymentHash
  *   BUG-11: crypto.subtle availability fixed for Node.js < 19
  *
- * WHY THE PREIMAGE GATE MATTERS:
+ * WHY THE preimage GATE MATTERS:
  *   Without it: fake reviews cost $0 and take 10 seconds.
  *   With it: each fake review requires a real Lightning payment.
  *   SHA256(preimage) === paymentHash is verifiable by any client, permanently.
@@ -33,7 +33,7 @@ import {
   COMMERCE_RELAYS,
 } from "./types.js";
 
-// ─── Crypto: SHA-256 Preimage Verification ────────────────────────────────────
+// ─── Crypto: SHA-256 preimage Verification ────────────────────────────────────
 
 /**
  * Get SubtleCrypto - works in browsers and Node.js 18+.
