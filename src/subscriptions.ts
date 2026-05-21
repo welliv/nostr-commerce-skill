@@ -154,9 +154,15 @@ export async function publishSubscriptionPlan(
  * authority up to the budget cap. Store it encrypted, never in plaintext.
  */
 export function createSubscription(params: any = {}): SubscriptionRecord {
+  // Validate required fields
   if (!params?.planDTag) throw new Error("planDTag is required.");
   if (!params?.buyerPubkey) throw new Error("buyerPubkey is required.");
-  if (!params || typeof params !== "object") params = {};
+  if (!params?.merchantPubkey) throw new Error("merchantPubkey is required.");
+  if (!params?.buyerNwcUrl) throw new Error("buyerNwcUrl is required.");
+  if (params?.amountMsats == null || params.amountMsats <= 0)
+    throw new Error("amountMsats must be a positive number.");
+  if (!params?.frequency) throw new Error("frequency is required.");
+
   const id = `sub_${params.buyerPubkey.slice(0, 8)}_${params.planDTag}_${Date.now()}`;
   const now = Math.floor(Date.now() / 1000);
 

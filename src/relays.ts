@@ -196,8 +196,26 @@ export async function fetchLatestEvent(
  * Check if a relay WebSocket endpoint is reachable within 3 seconds.
  */
 export async function isRelayReachable(url: string): Promise<boolean> {
-  // TODO: Implement proper reachability check
-  return true;
+  return new Promise((resolve) => {
+    try {
+      const ws = new WebSocket(url);
+      const timer = setTimeout(() => {
+        ws.close();
+        resolve(false);
+      }, 3_000);
+      ws.onopen = () => {
+        clearTimeout(timer);
+        ws.close();
+        resolve(true);
+      };
+      ws.onerror = () => {
+        clearTimeout(timer);
+        resolve(false);
+      };
+    } catch {
+      resolve(false);
+    }
+  });
 }
 
 /**

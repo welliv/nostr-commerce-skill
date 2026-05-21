@@ -49,7 +49,7 @@ function decrypt44(recipientPrivkey: Uint8Array, senderPubkey: string, ciphertex
  * is inside the seal, encrypted with NIP-44. Even the relay operator cannot
  * link the message to a sender.
  */
-function giftWrap(
+export function giftWrap(
   content: string,
   senderPrivkey: Uint8Array,
   recipientPubkey: string,

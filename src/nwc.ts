@@ -136,6 +136,16 @@ export class NostrWalletConnect {
     this.assertConnected();
 
     const normalizedInvoice = invoice.toLowerCase();
+    if (
+      !normalizedInvoice.startsWith("lnbc") &&
+      !normalizedInvoice.startsWith("lntb") &&
+      !normalizedInvoice.startsWith("lnbcrt")
+    ) {
+      throw new Error(
+        "Invalid BOLT-11 invoice. Must start with lnbc (mainnet), lntb (testnet), or lnbcrt (regtest)."
+      );
+    }
+
     const result = await this.client.payInvoice({ invoice: normalizedInvoice });
 
     return {

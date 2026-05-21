@@ -111,3 +111,19 @@ export function buildListingTemplate(data: any) {
     content: data.content || "",
   };
 }
+
+/**
+ * Filter a list of listing events to only those that have not expired.
+ * Events without an expires_at tag are considered active.
+ */
+export function filterActiveListings(events: NostrEvent[]): NostrEvent[] {
+  if (!Array.isArray(events)) return [];
+  const now = Math.floor(Date.now() / 1000);
+  return events.filter(event => {
+    if (!event || !Array.isArray(event.tags)) return false;
+    const expiresTag = event.tags.find(t => t[0] === "expires_at");
+    if (!expiresTag?.[1]) return true; // no expiration = active
+    const expiresAt = parseInt(expiresTag[1], 10);
+    return !isNaN(expiresAt) && expiresAt > now;
+  });
+}

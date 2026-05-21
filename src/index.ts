@@ -101,4 +101,18 @@ export {
 export {
   buildListingTemplate,
   parseListing,
+  filterActiveListings,
 } from "./listing.js";
+
+export * from "./zaps.js";
+
+export {
+  generateIdentity,
+  nsecToPrivateKey,
+  privateKeyToNsec,
+} from "./identity.js";
+
+export {
+  summarizeRatings,
+  verifyPreimage,
+} from "./reviews.js";

@@ -39,7 +39,7 @@ export function buildCart(
   };
 }
 
-export function summarizeCart(cart) {
+export function summarizeCart(cart: Cart) {
   const totalMsats = cart.items.reduce((s, i) => {
     const price = typeof i.unitPriceMsats === "number" ? i.unitPriceMsats : (typeof i.amountMsats === "number" ? i.amountMsats : 0);
     return s + price * (i.quantity || 1);

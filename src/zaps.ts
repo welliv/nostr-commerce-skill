@@ -266,7 +266,7 @@ export function parseZapReceipt(receipt: NostrEvent): ParsedZap | null {
 
     const bolt11Tag = receipt.tags.find((t) => t[0] === "bolt11");
     const amountMsats = bolt11Tag?.[1]
-      ? parseInt(bolt11Tag[1] || "0", 10) * 1000
+      ? parseBolt11AmountDisplay(bolt11Tag[1])
       : 0;
 
     const recipientTag = zapRequest.tags.find((t) => t[0] === "p");
@@ -375,6 +375,14 @@ export function buildPrism(
       "buildPrism requires at least 2 recipients. " +
       "For a single recipient, use a standard payment."
     );
+  }
+
+  for (const split of splits) {
+    if (!split.pubkey || split.pubkey.length !== 64) {
+      throw new Error(
+        `Invalid pubkey in prism split: expected 64 hex chars, got "${split.pubkey?.length ?? 0} chars".`
+      );
+    }
   }
 
   const total = splits.reduce((sum, s) => sum + s.percentage, 0);

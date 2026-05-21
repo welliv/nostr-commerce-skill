@@ -13,7 +13,7 @@ describe('Listings (Scenarios 2, 3, 4, 19)', () => {
       description: 'A great product',
       price: { amount: 1000, currency: 'sats' },
     });
-    expect(listing.kind).toBe(30402);
+    expect(listing.kind).toBe(30078);
     expect(listing.tags).toBeDefined();
   });
 

@@ -357,24 +357,27 @@ Content: comment text
 Nest replies: ["e", parent_comment_id], ["p", parent_author]
 ```
 
-#### NIP-57 + NIP-99 / Multi-merchant Cart & Zap Splits
+#### NIP-57 Splits / Payment Forwarding
 ```
 On the cart event or checkout request:
 tags: ["zap", seller1_pubkey, relay, weight1],
       ["zap", seller2_pubkey, relay, weight2],
       ["zap", platform_pubkey, relay, platform_weight]
-Client calculates proportional amounts before sending
+Client calculates proportional amounts before sending.
+Note: Lightning splits are sequential, not atomic.
+Each recipient receives an independent payment.
 ```
 
 #### NIP-57 Prisms / Platform Fees
 ```
-Use payment prisms (NIP-57 splits) to route a portion of every payment to the platform
-Example: tags include platform pubkey with weight for the fee percentage
-Client pays full amount; split happens automatically at the wallet level
+Platform fees use NIP-57 zap prisms — the merchant's lud16 returns
+a split invoice directing a percentage to the platform automatically.
+tags: ["zap", merchant_pubkey, relay, merchant_weight],
+      ["zap", platform_pubkey, relay, platform_weight]
+Note: NIP-42 is relay authentication (kind 22242) — unrelated to fees.
 ```
 
 #### NIP-98 / HTTP Auth
-```
 Kind: 27235 (ephemeral)
 Tags: ["u", request_url], ["method", "GET"/"POST"]
 Sign with user's key, include in Authorization header:
@@ -748,5 +751,70 @@ NIPs evolve. Always reference the canonical source before implementing:
 - LNURL spec: https://github.com/lnurl/luds
 - L402 spec: https://l402.org
 
+
 When a NIP is listed as `draft` or `optional`, note this in the plan and flag any
 potential compatibility issues with specific relays or clients.
+
+---
+
+## 🤖 AI Agent Decision Routing Tree
+
+Use this tree to select the right scenario functions for a given task.
+
+### New Merchant Onboarding
+```
+generateIdentity()                        → Scenario 1
+  └─ buildListingTemplate() + signAndPublishListing()  → Scenario 2
+       └─ verifyNip05()                   → Scenario 5 (optional trust layer)
+```
+
+### Buyer Purchase Flow
+```
+searchListings() / fetchListings()        → Scenario 4
+  └─ verifyNip05() / verifyIdentity()     → Scenario 5
+       └─ buildCart() → publishCart()     → Scenario 3
+            └─ sendEncryptedOrder()       → Scenario 6
+                 └─ payInvoice()          → Scenario 7
+                      └─ verifyPreimage() → Scenario 9
+                           └─ publishReview() → Scenario 10
+```
+
+### Escrow Flow (High-value orders)
+```
+createEscrow()                            → Scenario 8
+  └─ sendEncryptedOrder() with invoice
+       └─ buyer pays → holds in escrow
+            └─ merchant ships → reveals preimage
+                 └─ verifyPreimage() → release
+                      └─ publishReview()  → Scenario 10
+```
+
+### Subscription / Recurring Revenue
+```
+createSubscription()                      → Scenario 15
+  └─ chargeSubscription() (cron/agent)
+       └─ payInvoice() via buyerNwcUrl
+```
+
+### Multi-Merchant Cart with Platform Fee
+```
+buildCart([merchant1, merchant2 items])   → Scenario 3
+  └─ publishCart()
+       └─ buildPrism(seller, platform)    → Scenario 14 / 17
+            └─ requestZapInvoice()        → Scenario 13
+```
+
+### Dispute Resolution
+```
+postQuestion()                            → Scenario 11 (resolve by Q&A first)
+  └─ if unresolved:
+       └─ initiateDispute()               → Scenario 12
+            └─ verifyPreimage() as proof  → Scenario 9
+```
+
+### Key Decision Rules for Agents
+- **Always use encrypted orders** for anything containing buyer address or payment details (Scenario 6)
+- **Use escrow** when order value > 50,000 sats or merchant is unverified (Scenario 8)
+- **Verify before transacting**: check NIP-05 + reports for unknown merchants (Scenarios 5, 12)
+- **Use subscriptions** for recurring API access, not repeated manual payments (Scenario 15)
+- **Never re-use a preimage** — each payment generates a fresh one (Scenarios 8, 9)

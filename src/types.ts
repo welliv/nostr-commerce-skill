@@ -341,9 +341,10 @@ export interface CartItem {
   listingEventId: string;
   dTag?: string;
   merchantPubkey: string;
-  merchantLud16: string;
+  merchantLud16?: string;
   quantity: number;
   unitPriceMsats: number;
+  amountMsats?: number;
   title?: string;
   imageUrl?: string;
   relayHint?: string;
@@ -351,9 +352,12 @@ export interface CartItem {
 
 export interface Cart {
   id: string;
+  buyerPubkey: string;
   items: CartItem[];
   createdAt: number;
-  updatedAt: number;
+  updatedAt?: number;
+  expiresAt: number;
+  note?: string;
 }
 
 export interface CartSummary {

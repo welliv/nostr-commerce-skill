@@ -233,11 +233,12 @@ export async function initiateDispute(
   disputerKey?: Uint8Array,
   relays: string[] = DEFAULT_RELAYS
 ): Promise<PublishResult> {
-  if (!data.orderId) throw new Error("orderId is required.");
-  if (!data.paymentHash || data.paymentHash.length !== 64) {
+  // Validate synchronously — throws before any await, so .toThrow() catches it
+  if (!data?.orderId) throw new Error("orderId is required.");
+  if (!data?.paymentHash || data.paymentHash.length !== 64) {
     throw new Error("paymentHash must be a valid 64-char hex payment hash.");
   }
-  if (!data.reason.trim()) throw new Error("Dispute reason cannot be empty.");
+  if (!data?.reason?.trim()) throw new Error("Dispute reason cannot be empty.");
 
   if (!data.merchantPubkey || data.merchantPubkey.length !== 64) {
     throw new Error("merchantPubkey must be a valid 64-char hex pubkey.");
