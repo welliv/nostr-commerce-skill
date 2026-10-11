@@ -337,6 +337,19 @@ export const KIND = {
   HTTP_AUTH: 27235,
   // App data (NIP-78)
   APP_DATA: 30078,
+  // Music License Link (standard kinds)
+  FILE_METADATA: 1063, // NIP-94 (used as proof of release)
+  OTS_ATTESTATION: 1040, // NIP-03 (NIP flagged for update; .ots file is primary)
+  PAYTO_BINDING: 10133, // NIP-A3 (draft); 'lightning-node' payto type is PROPOSED
+  /**
+   * PROPOSED, UNREGISTERED placeholder kinds for Music License Link.
+   * Not assigned by any NIP. Numbers will change if a NIP PR assigns others.
+   */
+  PROPOSED_LICENSE_GRANT: 3402,
+  PROPOSED_LICENSE_SIGNER_AUTH: 3403,
+  PROPOSED_LISTENING_ATTESTATION: 3404,
+  PROPOSED_AGENT_BUDGET_AUTH: 3405,
+  PROPOSED_SUPPORTER_RECORD: 3406,
 } as const;
 
 export interface CartItem {

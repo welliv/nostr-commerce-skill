@@ -124,6 +124,48 @@ await payCartSequential(cart, buyerWallet, buyerPrivkey);
 
 ---
 
+## Music License Link
+
+An artist publishes a price and the exact licence text for one use of a track (sync in an online video, AI training, remix, or membership), signed with their Nostr key. Any app, fan or AI agent can find the offer, pay it over HTTP 402 with Lightning, and get back a signed licence that anyone can verify. A Bitcoin-anchored timestamp shows the file existed under the artist's key by a date. A platform's settlement agent can do all of this automatically, within limits a human sets.
+
+What it does not do: stop copying, prove authorship or ownership, or replace legal review. It only works where the seller controls both the recording and the composition.
+
+### Run the walkthrough (mock Lightning, no money, no relays)
+
+```bash
+npm install
+npm run demo:music        # artist publishes → agent discovers → approval → splits + x402 payment → licence → verification → audit log → demo reward plan
+npm run mcp:music         # stdio MCP server (demo world): find_license_offers / buy_license / verify_license
+npx vitest run tests/x402-lnbtc.test.ts tests/music-license-link.test.ts tests/fan-and-mcp.test.ts
+```
+
+The walkthrough uses an in-process mock Lightning network that signs real BOLT11 invoices with test node keys. Payment is simulated by returning the stored preimage. It is "regtest-style": nothing touches a real node. A Polar/regtest integration with real LND or phoenixd nodes is not in this branch yet.
+
+### Status of each part
+
+| Part | File | Status |
+|---|---|---|
+| Strict BOLT11 decode + signature recovery | `src/bolt11-strict.ts` | Done. Reproduces the x402 spec's test invoice byte for byte |
+| x402 `exact`/`lnbtc` (server challenge, client payment, facilitator `/settle`, paid-but-expired grace, replay store) | `src/x402-lnbtc.ts` | Done against the merged spec `specs/schemes/exact/scheme_exact_lnbtc.md`. All HTTP and MCP request-hash vectors reproduce. Concurrent-claim case passes. **Not yet run against a real node.** The official TS mechanism (x402 PR #3688) was unmerged when written; names follow the spec text |
+| Durable replay store | `FileReplayStore` | Done (one file per key, O_EXCL atomic create, survives restart). Single host only; multi-instance needs a shared DB with a UNIQUE key. `InMemoryReplayStore` is for tests and is **not** spec-compliant |
+| L402 | `src/l402.ts` | Kept alongside, unchanged |
+| Licence offer | `src/license.ts` | Done. NIP-99 kind 30402 (standard). Tags `license`, `terms`, `terms-text`, `pay-link` are **PROPOSED** |
+| Licence grant (signed receipt) + signer authorization | `src/license.ts` | Done. Kinds **3402 and 3403 are PROPOSED, unregistered placeholders** |
+| Third-party verifier | `verifyLicense()` | Done. Checks signatures, signer authority, offer, terms hash, track hash, anchor time, invoice decode, payee = artist's bound node, amount, network, preimage, request binding, splits. States its limits (cannot detect self-dealing) |
+| Lightning node binding | `buildPayToBinding()` | Kind 10133 (NIP-A3, **draft**); type value `lightning-node` is **PROPOSED** |
+| Pay link (artist server) | `src/license-server.ts` | Done in-process (pure handler). Not deployed. No HTTP framework wired |
+| Proof of release | `src/proof-of-release.ts` | Done. NIP-94 kind 1063 (`ox` = master hash), OpenTimestamps stamp (live calendar submission tested once manually), our own Bitcoin header check via Esplora (injectable), optional NIP-03 kind 1040. `opentimestamps` npm 0.4.9 is **effectively unmaintained** (last release 2021/22); it is pinned and wrapped behind `OtsBackend`. NIP-03 is flagged as needing an update, so the `.ots` file is the primary artifact |
+| Platform settlement agent | `src/settlement-agent.ts` | Done with mocks. Discovery, allowlists (artist, terms hash, use, network), per-licence and daily caps, human-approval rules, kill switch (`<dataDir>/KILL` or `SETTLEMENT_KILL=1`, checked before every payment), rate limit, splits as **separate, non-atomic** payments, licence verification, evidence bundle. Mirror the daily cap as an NWC wallet budget in production |
+| Signed audit log | `src/audit-log.ts` | Done. Hash-chained JSONL, Schnorr-signed, refuses preimage fields. Daily OTS anchoring of the head hash is not automated yet |
+| MCP buyer tool | `src/mcp-buyer.ts`, `src/bin/music-license-mcp.ts` | Done, tested over the SDK in-memory transport. The bin runs the **demo world only** |
+| Fan identity v1 | `src/fan.ts` | Done. Fan keys, fan-signed agent budget authorization (**PROPOSED** 3405), private supporter record gift-wrapped to self (**PROPOSED** 3406 via NIP-59), platform listening attestation (**PROPOSED** 3404, distinct days only). **Reward runner is a labelled DEMO**: only after the period closes, capped per fan, disclosed, never per listen |
+| Blossom upload + audio encryption | — | Not started |
+| NIP-46 / subkey licence signer in production | — | Design only. The demo uses a separate signing key authorized by the artist (3403) |
+
+### What a real sale still needs
+
+A funded payer wallet (NWC that returns preimages), an artist receiver node that can make invoices with a caller-supplied description hash and is exclusive to the pay link (Alby Hub self-hosted, phoenixd or LND; description-hash support needs testing), a deployed pay link, a lawyer-reviewed licence text, and a track the artist fully owns.
+
 ## Honest limitations
 
 | Limitation | Detail |
