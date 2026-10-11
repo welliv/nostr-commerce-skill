@@ -1,6 +1,6 @@
 {
   "name": "nostr-commerce-skill",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Agentic AI skill for Nostr commerce — all 22 scenarios, NIP-47/57/99/59/40/50/56/22/98 + Lightning L402",
   "type": "module",
   "main": "./dist/index.js",
@@ -29,6 +29,7 @@
     "@getalby/lightning-tools": "^5.0.0",
     "@getalby/sdk": "^3.6.0",
     "@scure/base": "^1.2.0",
+    "light-bolt11-decoder": "^3.2.0",
     "nostr-tools": "^2.7.0"
   },
   "devDependencies": {

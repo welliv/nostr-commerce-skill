@@ -11,9 +11,9 @@
  *
  * The Nostr way:
  *   The fee is in the protocol, not fine print.
- *   The wrapped invoice splits atomically at payment time.
- *   Merchant receives their amount. Platform receives their fee.
- *   Nobody holds funds. Settlement is instant.
+ *   The fee is visible in the listing. Merchant and platform are paid as
+ *   SEPARATE Lightning payments - not atomic. If one leg fails the other may
+ *   still settle; callers must handle partial completion.
  *
  * HOW WRAPPING WORKS:
  *   1. Merchant creates a BOLT-11 invoice for their price
@@ -23,7 +23,7 @@
  *      - Merchant gets: original amount
  *      - Platform gets: fee amount
  *   5. Buyer pays the wrapped invoice (one payment)
- *   6. LNURL provider routes atomically
+ *   6. Each leg is routed as its own payment (no atomicity guarantee)
  *
  * ALTERNATIVE (if merchant has no LNURL):
  *   Platform creates its own invoice for the total (merchant + fee)

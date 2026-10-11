@@ -40,6 +40,17 @@ import {
 // ─── LNURL Resolution ─────────────────────────────────────────────────────────
 
 /**
+ * Convert a Lightning address (LUD-16, "name@domain") into its LNURL-pay URL:
+ * https://domain/.well-known/lnurlp/name. Returns null if malformed.
+ */
+export function lightningAddressToLnurlp(lud16: string | undefined | null): string | null {
+  if (!lud16 || !lud16.includes("@")) return null;
+  const [name, domain] = lud16.split("@");
+  if (!name || !domain) return null;
+  return `https://${domain}/.well-known/lnurlp/${encodeURIComponent(name)}`;
+}
+
+/**
  * Resolve a user's LNURL pay endpoint from their kind 0 profile (lud16 field).
  * lud16 is a Lightning address: "alice@getalby.com"
  */
@@ -52,13 +63,7 @@ export async function resolveLnurlFromProfile(
 
   try {
     const content = JSON.parse(metadata.content);
-    const lud16: string | undefined = content.lud16;
-    if (!lud16 || !lud16.includes("@")) return null;
-
-    const [name, domain] = lud16.split("@");
-    if (!name || !domain) return null;
-
-    return `https://${domain}/.well known/lnurlp/${encodeURIComponent(name)}`;
+    return lightningAddressToLnurlp(content.lud16);
   } catch {
     return null;
   }

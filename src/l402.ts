@@ -9,7 +9,7 @@
  *   2. Server returns HTTP 402 with: WWW-Authenticate: L402 macaroon="...", invoice="lnbc..."
  *   3. Client pays the invoice, receives preimage
  *   4. Client retries with: Authorization: L402 <macaroon>:<preimage>
- *   5. Server verifies SHA256(preimage) === payment_hash in macaroon
+ *   5. Server verifies the HMAC token (resource + expiry caveats), SHA256(preimage) === payment_hash, single use
  *   6. Request succeeds
  *
  * NIP-98 adds Nostr identity to HTTP requests:
@@ -23,6 +23,8 @@
  * discoverable via NIP-50 search. Any agent can find and use paid APIs.
  */
 
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { decode as decodeBolt11 } from "light-bolt11-decoder";
 import { finalizeEvent, verifyEvent } from "nostr-tools";
 import { publishToRelays, fetchEvents } from "./relays.js";
 import { NostrWalletConnect } from "./nwc.js";
@@ -104,9 +106,7 @@ export function buildNip98AuthHeader(
 }
 
 function sha256(str: string): Uint8Array {
-  // Simple polyfill - use crypto.subtle in practice
-  const encoder = new TextEncoder();
-  return encoder.encode(str); // placeholder - real impl uses SubtleCrypto
+  return new Uint8Array(createHash("sha256").update(str, "utf8").digest());
 }
 
 function bufferToHex(buf: Uint8Array): string {
@@ -295,66 +295,189 @@ function parseApiEndpointEvent(event: NostrEvent): ApiEndpoint | null {
 }
 
 // ─── Server-Side L402 Helpers ─────────────────────────────────────────────────
+//
+// Token format (v1, HMAC-based - not full macaroons):
+//   token      = base64url(JSON(payload)) + "." + hex(HMAC-SHA256(secret, base64url(JSON(payload))))
+//   payload    = { v: 1, id: { ph: <payment hash hex>, res: <resource>, exp: <unix seconds> },
+//                  caveats: ["resource=<resource>", "expires=<unix seconds>"] }
+//   Authorization: L402 <token>:<preimage hex>
+//
+// Verification: valid HMAC, caveats match the identifier, resource matches the
+// request, not expired, SHA256(preimage) === payment hash, token not used before.
+
+/** Pluggable replay-protection store. Use Redis/DB in multi-instance deployments. */
+export interface UsedTokenStore {
+  /** Returns true if newly recorded, false if the id was already used. */
+  markUsed(tokenId: string, expiresAt: number): Promise<boolean> | boolean;
+}
+
+/** Default in-memory store. Entries are pruned after their expiry. Single-process only. */
+export class InMemoryUsedTokenStore implements UsedTokenStore {
+  private used = new Map<string, number>();
+  markUsed(tokenId: string, expiresAt: number): boolean {
+    const now = Math.floor(Date.now() / 1000);
+    for (const [k, exp] of this.used) if (exp < now) this.used.delete(k);
+    if (this.used.has(tokenId)) return false;
+    this.used.set(tokenId, expiresAt);
+    return true;
+  }
+}
+
+const defaultUsedTokenStore = new InMemoryUsedTokenStore();
+
+export interface L402TokenPayload {
+  v: 1;
+  id: { ph: string; res: string; exp: number };
+  caveats: string[];
+}
+
+function resolveSecret(secret?: string): string {
+  const s = secret ?? process.env.L402_SECRET;
+  if (!s || s.length < 32) {
+    throw new Error("L402 secret missing or too short. Set L402_SECRET (>= 32 chars) or pass `secret`.");
+  }
+  return s;
+}
+
+function b64url(str: string): string {
+  return Buffer.from(str, "utf8").toString("base64url");
+}
+
+function hmacHex(secret: string, data: string): string {
+  return createHmac("sha256", secret).update(data).digest("hex");
+}
+
+/** Mint an HMAC-signed L402 token bound to a payment hash, resource and expiry. */
+export function mintL402Token(params: {
+  paymentHash: string;
+  resource: string;
+  expiresAt: number;
+  secret?: string;
+}): string {
+  if (!/^[0-9a-f]{64}$/i.test(params.paymentHash)) throw new Error("paymentHash must be 64 hex chars.");
+  const payload: L402TokenPayload = {
+    v: 1,
+    id: { ph: params.paymentHash.toLowerCase(), res: params.resource, exp: params.expiresAt },
+    caveats: [`resource=${params.resource}`, `expires=${params.expiresAt}`],
+  };
+  const body = b64url(JSON.stringify(payload));
+  return `${body}.${hmacHex(resolveSecret(params.secret), body)}`;
+}
+
+/** Decode and authenticate a token. Returns the payload or null (bad format/signature). */
+export function decodeL402Token(token: string, secret?: string): L402TokenPayload | null {
+  const parts = token.split(".");
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+  const [body, sig] = parts;
+  const expected = Buffer.from(hmacHex(resolveSecret(secret), body), "hex");
+  const given = Buffer.from(sig, "hex");
+  if (given.length !== expected.length || !timingSafeEqual(given, expected)) return null;
+  try {
+    const p = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as L402TokenPayload;
+    if (p.v !== 1 || !p.id || typeof p.id.ph !== "string" || typeof p.id.exp !== "number") return null;
+    return p;
+  } catch { return null; }
+}
 
 /**
  * Generate an L402 challenge for your server to return on HTTP 402.
- * Pair with a NWC invoice creation.
  *
  * @example (Express.js middleware)
  *   app.use("/api/paid-endpoint", async (req, res, next) => {
- *     const authHeader = req.headers.authorisation;
- *     if (authHeader?.startsWith("L402")) {
- *       const valid = await verifyL402Credentials(authHeader, wallet);
- *       if (valid) return next();
- *     }
- *     const { challenge, invoice } = await createL402Challenge(wallet, 1000, "API call");
+ *     const auth = req.headers.authorization;
+ *     if (auth?.startsWith("L402") && await verifyL402Credentials(auth, { resource: "/api/paid-endpoint" })) return next();
+ *     const { challenge } = await createL402Challenge(wallet, 1000, "API call", { resource: "/api/paid-endpoint" });
  *     res.set("WWW-Authenticate", challenge).status(402).end();
  *   });
  */
 export async function createL402Challenge(
   wallet: NostrWalletConnect,
   pricePerCallMsats: number,
-  description: string
-): Promise<{ challenge: string; paymentHash: string }> {
+  description: string,
+  options: { resource: string; ttlSeconds?: number; secret?: string } = { resource: "*" }
+): Promise<{ challenge: string; paymentHash: string; token: string; expiresAt: number }> {
+  const ttl = options.ttlSeconds ?? 300;
   const invoice = await wallet.createInvoice({
     amountMsats: pricePerCallMsats,
     description,
-    expiry: 300, // 5 min - API calls should be quick
+    expiry: ttl,
   });
+  const expiresAt = Math.floor(Date.now() / 1000) + ttl;
+  const token = mintL402Token({
+    paymentHash: invoice.paymentHash,
+    resource: options.resource,
+    expiresAt,
+    secret: options.secret,
+  });
+  const challenge = `L402 macaroon="${token}", invoice="${invoice.invoice}"`;
+  return { challenge, paymentHash: invoice.paymentHash, token, expiresAt };
+}
 
-  // The "macaroon" in simple L402 is just the payment hash
-  // Full macaroon support requires a macaroon library
-  const macaroon = invoice.paymentHash;
-  const challenge = `L402 macaroon="${macaroon}", invoice="${invoice.invoice}"`;
-
-  return { challenge, paymentHash: invoice.paymentHash };
+export interface VerifyL402Options {
+  /** Resource being accessed; must equal the token's resource caveat (or token resource "*"). */
+  resource: string;
+  /** Server secret; defaults to process.env.L402_SECRET. */
+  secret?: string;
+  /** Replay store; defaults to a process-wide in-memory store. */
+  usedTokenStore?: UsedTokenStore;
+  /** Override "now" (unix seconds) for testing. */
+  now?: number;
 }
 
 /**
- * Verify an L402 Authorization header.
- * Returns true if SHA256(preimage) matches the payment hash.
+ * Verify an L402 Authorization header offline (no wallet lookup needed):
+ * HMAC, caveats, expiry, SHA256(preimage) === payment hash, single use.
  */
 export async function verifyL402Credentials(
   authorizationHeader: string,
-  wallet: NostrWalletConnect
+  options: VerifyL402Options
 ): Promise<boolean> {
-  if (!authorizationHeader.startsWith("L402 ")) return false;
-
-  const credentials = authorizationHeader.slice(5).split(":");
+  if (!authorizationHeader || !authorizationHeader.startsWith("L402 ")) return false;
+  if (!options || typeof options.resource !== "string") return false;
+  const credentials = authorizationHeader.slice(5).trim().split(":");
   if (credentials.length !== 2) return false;
+  const [token, preimage] = credentials;
+  if (!token || !preimage || !/^[0-9a-f]{64}$/i.test(preimage)) return false;
 
-  const [macaroon, preimage] = credentials;
-  if (!macaroon || !preimage) return false;
+  const payload = decodeL402Token(token, options.secret);
+  if (!payload) return false;
 
-  // macaroon = payment_hash, preimage is the revealed secret
-  const lookup = await wallet.lookupInvoice(macaroon);
-  return lookup.paid && lookup.preimage === preimage;
+  const { ph, res, exp } = payload.id;
+  // Every caveat must be satisfied and consistent with the signed identifier.
+  for (const c of payload.caveats ?? []) {
+    const [k, v] = c.split("=", 2);
+    if (k === "resource") { if (v !== res) return false; }
+    else if (k === "expires") { if (Number(v) !== exp) return false; }
+    else return false; // unknown caveat - fail closed
+  }
+  if (res !== "*" && res !== options.resource) return false;
+  const now = options.now ?? Math.floor(Date.now() / 1000);
+  if (now > exp) return false;
+
+  const digest = createHash("sha256").update(Buffer.from(preimage, "hex")).digest("hex");
+  if (digest !== ph) return false;
+
+  const store = options.usedTokenStore ?? defaultUsedTokenStore;
+  return await store.markUsed(ph, exp);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function extractPaymentHashFromInvoice(invoice: string): string {
-  // BOLT-11 contains the payment hash - for display purposes, return a placeholder
-  // Real extraction requires a bolt11 parsing library
-  return invoice.slice(-64); // last 64 chars often contain hash info
+/**
+ * Extract the payment hash from a BOLT-11 invoice by decoding its tagged fields
+ * (light-bolt11-decoder; does not verify the invoice signature).
+ * Throws if the invoice cannot be decoded or has no payment hash.
+ */
+export function extractPaymentHashFromInvoice(invoice: string): string {
+  let decoded: ReturnType<typeof decodeBolt11>;
+  try {
+    decoded = decodeBolt11(invoice);
+  } catch (e) {
+    throw new Error(`Invalid BOLT-11 invoice: ${(e as Error).message}`);
+  }
+  const section = decoded.sections.find((s) => s.name === "payment_hash") as { value?: string } | undefined;
+  if (!section?.value || !/^[0-9a-f]{64}$/i.test(section.value)) {
+    throw new Error("BOLT-11 invoice has no valid payment_hash.");
+  }
+  return section.value.toLowerCase();
 }

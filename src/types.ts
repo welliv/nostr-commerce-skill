@@ -7,7 +7,7 @@
  * AUDIT FIXES APPLIED:
  *   BUG-03: Added amountMsats to EscrowSession
  *   BUG-05: Removed nonexistent KIND.MARKETPLACE (30019), added STALL/PRODUCT
- *   BUG-06: Renamed HANDLER_INFO to REVIEW with accurate comment
+ *   BUG-06: Reviews moved off kind 31990 (NIP-89) to NIP-32 labels (kind 1985)
  *   BUG-08: Added paymentHash to ReviewData, made listingEventId required
  */
 
@@ -322,13 +322,15 @@ export const KIND = {
   STALL: 30017,     // was incorrectly 30019
   PRODUCT: 30018,   // was missing
   /**
-   * Reviews - community convention using kind 31990.
-   * BUG-06 FIX: renamed from HANDLER_INFO (NIP-89 meaning) to REVIEW.
-   * Kind 31990 is officially "Handler Information" per NIP-89.
-   * Its use for reviews is a Shopstr/community convention, not a finalized NIP.
-   * No breakage - same number, honest name.
+   * Reviews are published as NIP-32 label events (kind 1985) in the
+   * "commerce.review" namespace.
+   * BREAKING (v3): previously kind 31990, which is NIP-89 "Handler Information"
+   * and must not be used for reviews. Old 31990 reviews are no longer fetched.
    */
-  REVIEW: 31990,
+  LABEL: 1985,
+  REVIEW: 1985,
+  /** NIP-89 handler information (NOT reviews). */
+  HANDLER_INFO: 31990,
   // Trusted assertions (NIP-85)
   TRUSTED_ASSERTION: 30382,
   // HTTP Auth (NIP-98)

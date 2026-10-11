@@ -39,7 +39,7 @@ On Nostr, your identity is a keypair, your listings are signed events on relays,
 | 7 | Direct Payment | Lightning via NWC. Marketplace never holds funds. Settles in under a second. | NIP-47 |
 | 8 | Escrow | Funds locked until delivery. Auto-refunds at NIP-40 deadline. No middleman. | NIP-47, 40 |
 | 9 | Proof of Payment | SHA-256(preimage) == paymentHash. Cryptographic, permanent, unforgeable. | NIP-85 |
-| 10 | Reviews | Preimage required. Fake reviews are structurally impossible. | Kind 31990 |
+| 10 | Reviews | Preimage required. Fake reviews are structurally impossible. | NIP-32 kind 1985 (breaking: was 31990) |
 | 11 | Product Q&A | Threaded comments on listings (NIP-22). Every answer helps all future buyers. | NIP-22 |
 | 12 | Report Bad Actor | Kind-1984 reports follow a pubkey permanently across the entire network. | NIP-56 |
 
@@ -132,7 +132,7 @@ await payCartSequential(cart, buyerWallet, buyerPrivkey);
 | **Subscriptions** | Push-payment only. Merchant requests each period — no automatic pull. |
 | **Zapvertising reach** | ~40–60% of Nostr users have LNURL-capable wallets. Handle `no_lnurl` gracefully. |
 | **Fiat pricing** | CoinGecko rate at purchase time. Volatility between quote and payment is merchant's risk. |
-| **L402 tokens** | HMAC-based, not full macaroons. Sufficient for access control; not capability delegation. |
+| **L402 tokens** | HMAC-SHA256 over (payment hash, resource, expiry) with `L402_SECRET`; resource + expiry caveats; single-use. Not full macaroons; no delegation. |
 | **NIP-50 search** | Relay-dependent. Use `nostr.band` or `primal.net`; implement client-side fallback. |
 
 All 22 scenarios are implemented and tested. The table above describes infrastructure constraints.
@@ -182,3 +182,10 @@ Then tell your agent: *"Add escrow to the checkout"* or *"Let buyers leave verif
 ---
 
 MIT License
+## Breaking changes in v3.0.0 (step1-fixes)
+
+- **L402 tokens are now HMAC-signed.** `createL402Challenge(wallet, msats, desc, { resource, ttlSeconds?, secret? })` mints `base64url(payload).hmac` where the payload binds payment hash, resource and expiry (with `resource=` / `expires=` caveats). Set `L402_SECRET` (>= 32 chars) or pass `secret`.
+- **`verifyL402Credentials(header, { resource, secret?, usedTokenStore?, now? })`** replaces `verifyL402Credentials(header, wallet)`. It verifies offline: HMAC, caveats, expiry, `SHA256(preimage) === payment_hash`, and single use via a pluggable `UsedTokenStore` (default `InMemoryUsedTokenStore`, single-process only; use Redis/DB when running several instances). Legacy tokens where "macaroon = payment hash" are rejected; clients need no change (they still send `L402 <token>:<preimage>`).
+- **BOLT-11 parsing** now uses `light-bolt11-decoder` (MIT) instead of reading the last 64 characters. Invalid invoices throw. The decoder does not verify the invoice signature.
+- **Reviews** are published as NIP-32 label events (kind 1985, namespace `commerce.review`) instead of kind 31990 (NIP-89 handler info). Reviews published under 31990 are no longer fetched.
+- **`.well-known`** paths for NIP-05 and Lightning addresses fixed (they contained a space and failed in production).

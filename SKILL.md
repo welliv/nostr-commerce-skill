@@ -46,7 +46,7 @@ Every request maps here. Find the scenario → know the NIPs → implement.
 | 7 | Direct Payment | NIP-47 (NWC) | pay, Lightning, invoice, checkout, buy, wallet connect, NWC |
 | 8 | Escrow | NIP-40, 47 + hold invoice | escrow, hold funds, safe payment, trustless, buyer protection |
 | 9 | Proof of Payment | NIP-85 + preimage | receipt, payment proof, verify payment, preimage |
-| 10 | Reviews | Kind 31990 + preimage gate | review, rating, feedback, stars, testimonial |
+| 10 | Reviews | NIP-32 label (kind 1985) + preimage gate | review, rating, feedback, stars, testimonial |
 | 11 | Product Q&A | NIP-22 (kind 1111) | questions, Q&A, comments, product questions |
 | 12 | Report Bad Actor | NIP-56 (kind 1984) | report, flag, scam, bad actor, abuse |
 | 13 | Zaps | NIP-57 | zap, tip, Lightning like, social payment |
@@ -124,7 +124,7 @@ These are the non-obvious failures. Check them before implementing.
 - **Fiat rates are snapshots.** CoinGecko rate at purchase time. Volatility between quote and payment is merchant's risk.
 - **`nsec` can never be logged.** Not even in debug. One exposure invalidates the identity permanently.
 - **Splits are sequential, not atomic.** Multi-merchant cart payments are individual Lightning transactions. If one fails, others still complete.
-- **L402 uses simplified tokens.** HMAC-based, not full macaroons. Sufficient for access control; not for fine-grained capability delegation.
+- **L402 uses simplified tokens.** HMAC-SHA256 tokens bound to payment hash + resource + expiry (caveats), single-use via a pluggable store. Not full macaroons: no third-party caveats or delegation.
 - **verifyEvent() before trust.** Always call `verifyEvent(event)` before acting on any received event. Unsigned or malformed events will crash downstream code.
 - **LNURL-verify is not universal.** Not all Lightning providers expose a verify endpoint. Fallback to NIP-85 preimage proof.
 
