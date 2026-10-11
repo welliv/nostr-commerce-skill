@@ -136,3 +136,33 @@ export type {
   TrustScore,
   ScenarioInfo,
 } from "./fibonacci.js";
+
+// ─── Music License Link (Step 1) ─────────────────────────────────────────────
+// Status: library + tests with mock Lightning. Custom kinds 3402–3406 are PROPOSED.
+export { decodeBolt11Strict, encodeBolt11, nodePublicKey, Bolt11Error } from './bolt11-strict.js';
+export type { DecodedBolt11 } from './bolt11-strict.js';
+export {
+  LNBTC_MAINNET, LNBTC_TESTNET, LnbtcError, httpBinding, mcpBinding, requestHashOf, computeRequestHash,
+  createLnbtcChallenge, validateLnbtcChallenge, payLnbtcChallenge, settleLnbtc, serverHandlePaidRetry,
+  parseLnbtcPrice, InMemoryReplayStore, FileReplayStore, MockLightning, MockLightningNetwork,
+} from './x402-lnbtc.js';
+export type { LnbtcPaymentRequirements, LnbtcPaymentPayload, SettlementResponse, ReplayStore, ReceiverAdapter, PayerAdapter, PayResult } from './x402-lnbtc.js';
+export {
+  LICENSE_USES, termsHash, buildLicenseOffer, parseLicenseOffer, buildPayToBinding, payToNodes,
+  buildSignerAuthorization, buildLicenseGrant, verifyLicense,
+} from './license.js';
+export type { LicenseUse, ParsedOffer, VerifyLicenseResult } from './license.js';
+export { handleLicenseRequest, quoteSplits, licensorShareMsat, encodePaymentHeader, decodePaymentHeader } from './license-server.js';
+export type { PayLinkConfig } from './license-server.js';
+export {
+  hashFile, buildReleaseEvent, inspectOts, verifyOts, verifyRelease, openTimestampsBackend, esploraHeaderSource, buildOtsEvent,
+} from './proof-of-release.js';
+export { SettlementAgent } from './settlement-agent.js';
+export type { SpendPolicy, AgentDeps, BuyResult } from './settlement-agent.js';
+export { AuditLog, verifyAuditLog } from './audit-log.js';
+export {
+  generateFanIdentity, buildAgentBudgetAuthorization, checkAgentSpend, createPrivateSupporterRecord,
+  openPrivateSupporterRecord, buildListeningAttestation, planRewardRun, REWARD_DISCLOSURE,
+} from './fan.js';
+export { createMusicLicenseMcpServer } from './mcp-buyer.js';
+export { createDemoWorld } from './music-demo.js';
