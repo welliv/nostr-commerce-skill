@@ -49,7 +49,7 @@ Fallback: client-side filter on event.content + tags if relay lacks NIP-50
 ## NIP-05 / DNS Verification
 ```
 Profile kind 0: {"nip05": "user@domain.com"}
-Verify: GET https://domain.com/.well known/nostr.json?name=user
+Verify: GET https://domain.com/.well-known/nostr.json?name=user
 Pass: response.names["user"] === pubkey
 ```
 
@@ -114,10 +114,11 @@ Publisher: trusted third party (escrow service, platform, etc.)
 Use: "this pubkey settled payment X", "this pubkey is KYC-verified merchant"
 ```
 
-## Kind 31990 / Reviews
+## NIP-32 (kind 1985) / Reviews
 ```
 Content: {"review": "text", "rating": 5}
-Tags: ["d", id], ["preimage", payment_preimage], ["e", listing_event_id]
+Tags: ["L","commerce.review"], ["l","verified-purchase","commerce.review"], ["rating", n], ["preimage", p], ["payment_hash", h], ["e", listing_event_id, "", "listing"]
+(Breaking: was kind 31990, which is NIP-89 handler info.)
 Gate: preimage proves buyer actually paid — verifyPreimage(preimage, paymentHash)
 ```
 
@@ -158,7 +159,7 @@ Header: Authorization: Nostr <base64(JSON.stringify(signedEvent))>
 
 ## L402 / Paid API
 ```
-Server: 402 response with WWW-Authenticate: L402 macaroon="...", invoice="lnbc..."
+Server: 402 response with WWW-Authenticate: L402 macaroon="<hmac token>", invoice="lnbc..."
 Client: pay invoice → get preimage → retry with Authorization: L402 <macaroon>:<preimage>
 Announce endpoint: publish as kind 30078 event (discoverable via NIP-50)
 ```

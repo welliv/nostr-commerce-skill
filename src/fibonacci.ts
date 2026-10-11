@@ -74,7 +74,7 @@ export interface TrustSignals {
   hasExternalLinks: boolean;
   /** NIP-85: at least one trusted third party assertion for this pubkey. Weight: 2 */
   hasThirdPartyAssertions: boolean;
-  /** Kind 31990: at least one review verified by a real payment preimage. Weight: 3 */
+  /** NIP-32 kind 1985 review label: at least one review verified by a real payment preimage. Weight: 3 */
   hasVerifiedReviews: boolean;
   /** NIP-57: at least one zap receipt on their listings — real sats from real people. Weight: 5 */
   hasReceivedZaps: boolean;

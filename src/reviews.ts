@@ -33,6 +33,9 @@ import {
   COMMERCE_RELAYS,
 } from "./types.js";
 
+/** NIP-32 label namespace used for commerce reviews. */
+export const REVIEW_LABEL_NAMESPACE = "commerce.review";
+
 // ─── Crypto: SHA-256 preimage Verification ────────────────────────────────────
 
 /**
@@ -95,7 +98,9 @@ export async function verifyPreimage(
 // ─── Publish Review ────────────────────────────────────────────────────────────
 
 /**
- * Publish a preimage-gated review (kind 31990 community convention).
+ * Publish a preimage-gated review as a NIP-32 label event (kind 1985),
+ * namespace "commerce.review" (tags: ["L","commerce.review"], ["l","verified-purchase","commerce.review"]).
+ * BREAKING: previously kind 31990, which is NIP-89 handler info.
  *
  * BUG-08 FIX: The preimage is now bound to a specific payment hash AND listing.
  * Clients verifying reviews must check:
@@ -150,8 +155,9 @@ export async function publishReview(
   }
 
   const tags: string[][] = [
-    // Unique stable ID for this review
-    ["d", `review:${data.subject}:${data.listingEventId}`],
+    // NIP-32 label namespace + label
+    ["L", REVIEW_LABEL_NAMESPACE],
+    ["l", "verified-purchase", REVIEW_LABEL_NAMESPACE],
     // Rating
     ["rating", String(data.rating)],
     // BUG-08 FIX: Bind preimage to the specific payment hash
@@ -195,8 +201,8 @@ export async function fetchReviews(
 ): Promise<NostrEvent[]> {
   const filter =
     subjectType === "pubkey"
-      ? { kinds: [KIND.REVIEW], "#p": [subject], limit: 200 }
-      : { kinds: [KIND.REVIEW], "#e": [subject], limit: 200 };
+      ? { kinds: [KIND.REVIEW], "#L": [REVIEW_LABEL_NAMESPACE], "#p": [subject], limit: 200 }
+      : { kinds: [KIND.REVIEW], "#L": [REVIEW_LABEL_NAMESPACE], "#e": [subject], limit: 200 };
 
   return fetchEvents([filter], relays) as Promise<NostrEvent[]>;
 }
@@ -219,7 +225,7 @@ export interface ParsedReview {
 }
 
 /**
- * Parse a raw kind 31990 event into a structured review.
+ * Parse a raw NIP-32 (kind 1985) review label event into a structured review.
  * isVerified is false by default - use fetchVerifiedReviews() for batch verification.
  */
 export function parseReview(

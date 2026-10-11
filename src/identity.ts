@@ -163,7 +163,7 @@ export async function signWithNip07(
 /**
  * Verify a NIP-05 identifier against a pubkey.
  *
- * Fetches https://domain.com/.well known/nostr.json?name=<username>
+ * Fetches https://domain.com/.well-known/nostr.json?name=<username>
  * and checks that names[username] === pubkey.
  *
  * @example verifyNip05("alice@shopstr.store", "abc123pubkeyhex...")
@@ -176,7 +176,7 @@ export async function verifyNip05(
   if (!name || !domain) return false;
 
   try {
-    const url = `https://${domain}/.well known/nostr.json?name=${encodeURIComponent(name)}`;
+    const url = `https://${domain}/.well-known/nostr.json?name=${encodeURIComponent(name)}`;
     const res = await fetch(url, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(5_000),
